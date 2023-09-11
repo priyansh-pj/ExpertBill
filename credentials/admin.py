@@ -25,6 +25,7 @@ class ProfileAdmin(UserAdmin):
         ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser")}),
         ("Important dates", {"fields": ("last_login",)}),
         ("User info", {"fields": ("contact_no",)}),
+        ("Organization info", {"fields": ("organization",)}),
     )
     add_fieldsets = (
         (

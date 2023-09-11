@@ -81,7 +81,7 @@ class Profile(AbstractUser):
     contact_no = models.BigIntegerField()
     password = models.CharField(max_length=255)
     # profile_image = models.ImageField(default='default_user.png', upload_to='/path')
-    # organization = models.ManyToManyField(Organization)
+    organization = models.ManyToManyField(to="organization.Organization")
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
@@ -98,7 +98,29 @@ class Profile(AbstractUser):
     def status_staff(self):
         return self.is_staff
 
-    # def get_associated_organizations(self):
-    #     from organization.models import Organization
-    #
-    #     return Organization.objects.filter(employees__profile=self)
+    def get_associated_organizations(self):
+        from organization.models import Organization
+
+        organizations = Organization.objects.filter(
+            employees__profile=self, employees__status=True
+        ).values("id", "name", "employees__roles__name")
+
+        # Create a dictionary to store the merged results
+        org_dict = {}
+
+        for org in organizations:
+            org_id = org["id"]
+
+            if org_id in org_dict:
+                org_dict[org_id]["roles"].append(org["employees__roles__name"])
+            else:
+                org_dict[org_id] = {
+                    "id": org_id,
+                    "name": org["name"],
+                    "roles": [org["employees__roles__name"]],
+                }
+
+        # Convert the dictionary values back to a list
+        merged_organizations = list(org_dict.values())
+
+        return merged_organizations

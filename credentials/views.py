@@ -13,14 +13,15 @@ def login(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
         user = authenticate(request, username=email, password=password)
-        print(user)
         if user is not None:
             Login(request, user)
             return redirect("organizations")
         else:
             messages.warning(request, "Invalid credentials")
 
-    return render(request, "authentication/authentication.html")
+        return redirect("login")
+
+    return render(request, "authentication/login.html")
 
 
 def register(request):
@@ -40,17 +41,18 @@ def register(request):
                 first_name=first_name,
                 last_name=last_name,
                 email=email,
-                contact_number=contact_number,
+                contact_no=contact_number,
                 password=password,
             )
             Login(request, profile)
-            print(f"created {profile}")
 
             return redirect("organizations")
         except Exception as e:
             messages.warning(request, f"Unable to create account {e}")
 
-        return render(request, "authentication/authentication.html")
+        return redirect("register")
+
+    return render(request, "authentication/register.html")
 
 
 @login_required(login_url="login")

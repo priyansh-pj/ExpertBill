@@ -88,8 +88,8 @@ class Profile(AbstractUser):
 
     objects = UserManager()
 
-    USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["first_name", "last_name", "email", "contact_no"]
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["first_name", "last_name", "username", "contact_no"]
 
     def __str__(self):
         return self.username

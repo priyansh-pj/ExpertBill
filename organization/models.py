@@ -1,8 +1,8 @@
 import uuid
 
-from django.db import models
+from django.db import models, transaction
 from django.core.validators import RegexValidator
-
+from django.core.exceptions import ObjectDoesNotExist
 from credentials.models import Profile
 
 
@@ -17,7 +17,7 @@ class Role(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.name
+        return f"{self.id} {self.name}"
 
 
 # Create your models here.
@@ -38,6 +38,26 @@ class Organization(models.Model):
     def __str__(self):
         return self.name
 
+    @classmethod
+    @transaction.atomic
+    def create(cls, organization, user):
+        organization = cls.objects.create(
+            name=organization["name"],
+            email=organization["email"],
+            gst_id=organization["gstin"],
+            address=organization["address"],
+            pin_code=organization["pincode"],
+            contact_number=organization["phone"],
+        )
+        organization.features.add(Role.objects.get(id=1))
+
+        employee = Employee.objects.create(
+            profile=user,
+            organization=organization,
+        )
+
+        employee.roles.add(Role.objects.get(id=1))
+
 
 class Employee(models.Model):
     id = models.AutoField(primary_key=True)
@@ -57,6 +77,15 @@ class Employee(models.Model):
     def __str__(self):
         return f"Employee: {self.profile.username} ({self.organization.name})"
 
+    @classmethod
+    def validate_organization(cls, user, organization):
+        try:
+            employee = Employee.objects.get(profile=user, organization=organization)
+        except Employee.DoesNotExist:
+            return False
+
+        return employee.roles
+
 
 class AppliedOrganization(models.Model):
     id = models.AutoField(primary_key=True)
@@ -67,3 +96,9 @@ class AppliedOrganization(models.Model):
 
     def __str__(self):
         return f"{self.organization} - {self.profile}"
+
+    @classmethod
+    @transaction.atomic
+    def apply(cls, user, organization):
+        organization = Organization.objects.get(org_id=organization)
+        return cls.objects.create(profile=user, organization=organization)

@@ -1,6 +1,76 @@
 {% extends 'template.html' %}
 
 {% block content %}
+
+    {% if organizations %}
+        <div class="row">
+        {% for organization in organizations %}
+            <div class="col-12 col-sm-6 col-md-4 grid-margin stretch-card">
+              <div class="card icon-card-info">
+              <a class="card-link" href={% url "organization_verify" organization.id %} style="color: white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                      <div class="icon mb-0 mb-md-2 mb-xl-0 mr-2">
+                        <i class="mdi mdi-bookmark"></i>
+                      </div>
+                      <h4 class="font-weight-medium mb-0">{{ organization.name }}</h4>
+                    </div>
+                    <div class="d-flex align-items-center mt-3 flex-wrap">
+                      <h5 class="font-weight-normal mb-0 mr-2">
+                        Role : {{ organization.roles.0 }}{% for role in organization.roles|slice:"1:" %}, {{ role }}{% endfor %}
+                      </h5>
+                    </div>
+                </div>
+              </a>
+              </div>
+            </div>
+        {% endfor %}
+        </div>
+    {% endif %}
+    <hr>
+    <div class="row">
+            <div class="col-12 col-sm-6 col-md-4 grid-margin stretch-card">
+              <div class="card icon-card-dark">
+                  <a class="card-link" href={% url "organization_create" %} style="color: white">
+
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                      <div class="icon mb-0 mb-md-2 mb-xl-0 mr-2">
+                        <i class="mdi mdi-bookmark-plus"></i>
+                      </div>
+                      <h4 class="font-weight-medium mb-0">Create Organization</h4>
+                    </div>
+                    <div class="d-flex align-items-center mt-3 flex-wrap">
+                      <h5 class="font-weight-normal mb-0 mr-2">
+                        Begin Building Your New Organization
+                      </h5>
+                    </div>
+                </div>
+                  </a>
+              </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-md-4 grid-margin stretch-card">
+              <div class="card icon-card-dark">
+                  <a class="card-link" href={% url "organization_apply"%} style="color: white">
+
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                      <div class="icon mb-0 mb-md-2 mb-xl-0 mr-2">
+                        <i class="mdi mdi-magnify"></i>
+                      </div>
+                      <h4 class="font-weight-medium mb-0">Search Organization</h4>
+                    </div>
+                    <div class="d-flex align-items-center mt-3 flex-wrap">
+                      <h5 class="font-weight-normal mb-0 mr-2">
+                        Get Started with organization
+                      </h5>
+                    </div>
+                </div>
+                  </a>
+              </div>
+            </div>
+        </div>
 {% endblock %}
 
 {% block script %}

@@ -1,0 +1,44 @@
+{% extends 'template.html' %}
+
+{% block content %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-primary">
+            <li class="breadcrumb-item"><a href={{ breadcrumb.0 }}>Organizations</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Apply Organization</li>
+        </ol>
+    </nav>
+    <div class="row">
+        <div class="col-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Apply Organization</h4>
+                    <form class="forms-sample" method="POST" action="{% url 'organization_apply' %}"
+                          id="organization-form">
+                        {% csrf_token %}
+                        <div class="row">
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="organization-id-label">Organization ID:</span>
+                                        </div>
+                                        <input type="text" class="form-control" id="organization-id" name="id"
+                                               placeholder="Organization ID" required>
+                                        <div class="input-group-append">
+                                            <button type="submit" class="btn btn-primary">Apply</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+{% endblock %}

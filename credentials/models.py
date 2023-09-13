@@ -3,10 +3,11 @@ from django.db import models
 # Create your models here.
 import uuid
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-from django.db import models
+from django.db import models, transaction
 
 
 class UserManager(BaseUserManager):
+    @transaction.atomic
     def create_user(
         self,
         username,
@@ -32,6 +33,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+    @transaction.atomic
     def update_password(self, username, password=None, **extra_fields):
         if not username:
             raise ValueError("The username must be set")
@@ -41,6 +43,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+    @transaction.atomic
     def create_superuser(
         self,
         username,
@@ -57,6 +60,7 @@ class UserManager(BaseUserManager):
             username, first_name, last_name, email, contact_no, password, **extra_fields
         )
 
+    @transaction.atomic
     def create_staffuser(
         self,
         username,

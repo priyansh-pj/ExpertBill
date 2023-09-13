@@ -1,0 +1,148 @@
+{% extends 'template.html' %}
+
+{% block content %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-primary">
+            <li class="breadcrumb-item"><a href={{ breadcrumb.0 }}>Organizations</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Create Organization</li>
+        </ol>
+    </nav>
+    <div class="row">
+        <div class="col-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Create Organization</h4>
+                    <div class="alert alert-fill-primary" role="alert">
+                        <i class="mdi mdi-alert-circle"></i>
+                        Enter Pincode to autofill City and State
+                    </div>
+
+                    <form class="forms-sample" method="POST"
+                          action={% url "organization_create" %} id="organization-form">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="organization-name">Organization Name</label>
+                                <input type="text" class="form-control" id="organization-name" name="name"
+                                       placeholder="Name" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="organization-email">Email address</label>
+                                <input type="email" class="form-control" id="organization-email" name="email"
+                                       placeholder="Email" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="organization-gstin">GSTIN <span
+                                        id="gstin-validation-message"></span></label>
+                                <input type="text" class="form-control" id="organization-gstin" name="gstin"
+                                       placeholder="GSTIN Number">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="organization-phone">Phone</label>
+                                <input type="tel" class="form-control" id="organization-phone" name="phone"
+                                       placeholder="Phone" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col-md-4">
+                                <label for="organization-city">City</label>
+                                <input type="text" class="form-control" id="organization-city" name="city"
+                                       placeholder="City" readonly>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="organization-state">State</label>
+                                <input type="text" class="form-control" id="organization-state" name="state"
+                                       placeholder="State" readonly>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="organization-pincode">Pincode</label>
+                                <input type="number" class="form-control" id="organization-pincode" name="pincode"
+                                       placeholder="Pincode" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="organization-address">Address</label>
+                            <textarea class="form-control" id="organization-address" name="address"
+                                      placeholder="Address" rows="4"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary mr-2">Submit</button>
+                        <button class="btn btn-light">Cancel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#organization-pincode').blur(function () {
+                var pincode = $(this).val();
+                if (pincode.length == 6) {
+                    $.ajax({
+                        url: 'https://api.postalpincode.in/pincode/' + pincode,
+                        type: 'GET',
+                        success: function (result) {
+                            if (result[0].Status == 'Success') {
+                                var city = result[0].PostOffice[0].District;
+                                var state = result[0].PostOffice[0].State;
+                                $('#organization-city').val(city);
+                                $('#organization-state').val(state);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+    <script>
+        // Function to validate GSTIN
+        function validateGSTIN(gstin) {
+            // GSTIN format regex
+            if (gstin === "") {
+                return true;
+            }
+            var gstinRegex = /^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[1-9A-Z]{1}Z[A-Z\d]{1}$/;
+            return gstin.match(gstinRegex) !== null;
+        }
+
+        // Function to handle input change event
+        function handleInputChange() {
+            var inputElement = document.getElementById("organization-gstin");
+            var validationMessage = document.getElementById("gstin-validation-message");
+            if (inputElement.value == "") {
+                validationMessage.textContent = "";
+                validationMessage.style.color = "";
+            } else if (validateGSTIN(inputElement.value)) {
+                // Valid GSTIN
+                validationMessage.textContent = "(Valid GSTIN)";
+                validationMessage.style.color = "green";
+            } else {
+                // Invalid GSTIN
+                validationMessage.textContent = "(Invalid GSTIN. Please enter a valid GSTIN.)";
+                validationMessage.style.color = "red";
+            }
+        }
+
+        function handleFormSubmit(event) {
+            var inputElement = document.getElementById("organization-gstin");
+            if (!validateGSTIN(inputElement.value)) {
+                // Prevent form submission if GSTIN is invalid
+                event.preventDefault();
+                alert("Please enter a valid GSTIN before submitting.");
+            }
+        }
+
+        // Add an event listener to the input field
+        var gstinInput = document.getElementById("organization-gstin");
+        gstinInput.addEventListener("input", handleInputChange);
+
+        var organizationForm = document.getElementById("organization-form");
+        organizationForm.addEventListener("submit", handleFormSubmit);
+    </script>
+{% endblock %}

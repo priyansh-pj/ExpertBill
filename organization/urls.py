@@ -9,5 +9,6 @@ urlpatterns = [
     path(
         "verify/<str:organization_id>", organization_verify, name="organization_verify"
     ),
+    path("", organization, name="organization"),
     path("feature/", organization_feature, name="organization_feature"),
 ]

@@ -30,7 +30,7 @@ def apply_organization(request):
     }
     if request.method == "POST":
         organization_id = request.POST.get("id")
-        org = AppliedOrganization.apply(request.user, organization_id)
+        AppliedOrganization.apply(request.user, organization_id)
         return redirect("organizations")
 
     return render(request, "organization/apply.html", data)
@@ -70,10 +70,29 @@ def organization_feature(request):
 def organization_verify(request, organization_id):
     organization = Organization.objects.get(id=organization_id)
     role = Employee.validate_organization(request.user, organization)
-    print(role)
     if not role:
         return redirect("organizations")
 
-    request.session["organization"] = organization
+    request.session["organization"] = {
+        "organization": organization.org_id,
+        "name": organization.name,
+        "features": [feature.name for feature in organization.features.all()],
+    }
+
     request.session["role"] = role
-    return redirect("organizations")
+    return redirect("organization")
+
+
+@login_required(login_url="login")
+def organization(request):
+    if "organization" not in request.session and "role" not in request.session:
+        return redirect("organizations")
+    organization = request.session["organization"]
+    role = request.session["role"]
+    data = {
+        "title": organization.get("name"),
+        "first_name": request.user.first_name,
+        "last_name": request.user.last_name,
+        "role": ", ".join(role),
+    }
+    return render(request, "organization/organization.html", data)

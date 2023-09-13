@@ -81,10 +81,10 @@ class Employee(models.Model):
     def validate_organization(cls, user, organization):
         try:
             employee = Employee.objects.get(profile=user, organization=organization)
+            roles = [role.get("name") for role in employee.roles.values("name").all()]
+            return roles
         except Employee.DoesNotExist:
-            return False
-
-        return employee.roles
+            return None
 
 
 class AppliedOrganization(models.Model):

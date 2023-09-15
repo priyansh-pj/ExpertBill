@@ -94,5 +94,6 @@ def organization(request):
         "first_name": request.user.first_name,
         "last_name": request.user.last_name,
         "role": ", ".join(role),
+        "organization": organization,
     }
     return render(request, "organization/organization.html", data)

@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "credentials.apps.CredentialsConfig",
     "organization.apps.OrganizationConfig",
+    "store.apps.StoreConfig",
+    "bill.apps.BillConfig",
 ]
 
 MIDDLEWARE = [

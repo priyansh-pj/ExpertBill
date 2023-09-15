@@ -93,74 +93,160 @@
           </li>
           {% if organization %}
               <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                <a class="nav-link" data-toggle="collapse" href="#owner" aria-expanded="false" aria-controls="owner">
                   <i class="mdi mdi-briefcase menu-icon"></i>
                   <span class="menu-title">Owner</span>
                   <i class="menu-arrow"></i>
                 </a>
-                <div class="collapse" id="ui-basic">
+                <div class="collapse" id="owner">
                   <ul class="nav flex-column sub-menu">
                     <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Manage Organization</a></li>
                   </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Manage Employee</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Assign Employee</a></li>
+                  </ul>
+
                 </div>
               </li>
               <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                <a class="nav-link" data-toggle="collapse" href="#hr" aria-expanded="false" aria-controls="hr">
                   <i class="mdi mdi-account-network menu-icon"></i>
                   <span class="menu-title">HR</span>
                   <i class="menu-arrow"></i>
                 </a>
-                <div class="collapse" id="ui-basic">
+                <div class="collapse" id="hr">
                   <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Manage Organization</a></li>
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Manage Employee</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Add Employee</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Salary Distribution</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Salary History</a></li>
                   </ul>
                 </div>
               </li>
               <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                <a class="nav-link" data-toggle="collapse" href="#accountant" aria-expanded="false" aria-controls="accountant">
                   <i class="mdi mdi-format-list-bulleted menu-icon"></i>
                   <span class="menu-title">Accountant</span>
                   <i class="menu-arrow"></i>
                 </a>
-                <div class="collapse" id="ui-basic">
+                <div class="collapse" id="accountant">
                   <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Manage Organization</a></li>
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Billing</a></li>
                   </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Billing History</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>GST Billing History</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>E-way Billing History</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Quotation</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Quotation History</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Expense</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Expense History</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Invoice</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Invoice History</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Inventory</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Customer Details</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Supplier Details</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Accounts</a></li>
+                  </ul>
+
                 </div>
               </li>
               <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                <a class="nav-link" data-toggle="collapse" href="#sales" aria-expanded="false" aria-controls="sales">
                   <i class="mdi mdi-currency-inr menu-icon"></i>
                   <span class="menu-title">Sales</span>
                   <i class="menu-arrow"></i>
                 </a>
-                <div class="collapse" id="ui-basic">
+                <div class="collapse" id="sales">
                   <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Manage Organization</a></li>
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Billing</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Billing History</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Quotation</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Quotation History</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Sales Lead</a></li>
                   </ul>
                 </div>
               </li>
               <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                <a class="nav-link" data-toggle="collapse" href="#analyst" aria-expanded="false" aria-controls="analyst">
                   <i class="mdi mdi-chart-areaspline menu-icon"></i>
                   <span class="menu-title">Analyst</span>
                   <i class="menu-arrow"></i>
                 </a>
-                <div class="collapse" id="ui-basic">
+                <div class="collapse" id="analyst">
                   <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Manage Organization</a></li>
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Predictive Analytics</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Demand Forecasting</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Employee Management</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Sentiment Analysis</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Risk Assessment</a></li>
                   </ul>
                 </div>
               </li>
               <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                <a class="nav-link" data-toggle="collapse" href="#production" aria-expanded="false" aria-controls="production">
                   <i class="mdi mdi-wrench menu-icon"></i>
                   <span class="menu-title">Production Manager</span>
                   <i class="menu-arrow"></i>
                 </a>
-                <div class="collapse" id="ui-basic">
+                <div class="collapse" id="production">
                   <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Manage Organization</a></li>
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Inventory</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Manifacture Parts</a></li>
+                  </ul>
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Manifacture Parts History</a></li>
                   </ul>
                 </div>
               </li>

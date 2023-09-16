@@ -2,7 +2,6 @@ import uuid
 
 from django.db import models, transaction
 from django.core.validators import RegexValidator
-from django.core.exceptions import ObjectDoesNotExist
 from credentials.models import Profile
 
 

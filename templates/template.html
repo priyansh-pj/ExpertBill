@@ -13,6 +13,8 @@
   <link rel="stylesheet" href={% static "vendors/css/vendor.bundle.base.css" %}>
   <!-- endinject -->
   <!-- plugin css for this page -->
+    {% block style %}
+    {% endblock %}
   <!-- End plugin css for this page -->
   <!-- inject:css -->
   <link rel="stylesheet" href={% static "css/vertical-layout-light/style.css" %}>
@@ -164,7 +166,7 @@
                     <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Expense History</a></li>
                   </ul>
                   <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Invoice</a></li>
+                    <li class="nav-item"> <a class="nav-link" href={% url "invoice" %}>Invoice</a></li>
                   </ul>
                   <ul class="nav flex-column sub-menu">
                     <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Invoice History</a></li>
@@ -288,8 +290,6 @@
   <script src={% static "js/off-canvas.js" %}></script>
   <script src={% static "js/hoverable-collapse.js" %}></script>
   <script src={% static "js/template.js" %}></script>
-  <script src={% static "js/settings.js" %}></script>
-  <script src={% static "js/todolist.js" %}></script>
   <!-- endinject -->
   <!-- plugin js for this page -->
   <!-- End plugin js for this page -->

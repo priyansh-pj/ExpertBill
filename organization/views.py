@@ -76,7 +76,7 @@ def organization_verify(request, organization_id):
     request.session["organization"] = {
         "organization": organization.org_id,
         "name": organization.name,
-        "features": [feature.name for feature in organization.features.all()],
+        # "features": [feature.name for feature in organization.features.all()], # paid feature
     }
 
     request.session["role"] = role

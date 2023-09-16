@@ -8,7 +8,7 @@
       // If a default value is not specified for an input, then it will
       // have its value cleared.
       defaultValues: {
-        'text-input': 'foo'
+        'text-input': ''
       },
       // (Optional)
       // "show" is called just after an item is added.  The item is hidden

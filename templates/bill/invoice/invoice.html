@@ -1,0 +1,286 @@
+{% extends 'template.html' %}
+
+{% load static %}
+
+{% block style %}
+	<link rel="stylesheet" href={% static "vendors/select2/select2.min.css" %}>
+	<link rel="stylesheet" href={% static "vendors/select2-bootstrap-theme/select2-bootstrap.min.css" %}>
+{% endblock %}
+
+{% block content %}
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb bg-primary">
+			<li class="breadcrumb-item"><a href={{ breadcrumb.0 }}>Organization</a></li>
+			<li class="breadcrumb-item active" aria-current="page">Generate Invoice</li>
+		</ol>
+	</nav>
+	<div class="card">
+		<div class="card-body">
+			<h4 class="card-title">Invoice Form</h4>
+
+			<form class="forms-invoice">
+				<div class="row">
+					<div class="col-6 form-group">
+						<label for="vendor_name">Vendor Name</label>
+						<input type="text" class="form-control" id="vendor_name" placeholder="Vendor Name"
+							   name="vendor_name" required>
+					</div>
+					<div class="col-6 form-group">
+						<label for="vendor_phone">Vendor Contact Number</label>
+						<input type="tel" class="form-control" id="vendor_phone" placeholder="Vendor Contact Number"
+							   name="vendor_phone" required>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-6 form-group">
+						<label for="vendor_gstin">Vendor GSTIN </label>
+						<input type="text" class="form-control" id="vendor_gstin" placeholder="Vendor GST"
+							   name="vendor_gstin" required>
+					</div>
+					<div class="col-6 form-group">
+						<label for="vendor_pincode">Vendor Pincode </label>
+						<input type="tel" class="form-control" id="vendor_pincode" placeholder="Vendor Contact Pincode"
+							   name="vendor_pincode" required>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-6 form-group">
+						<label for="vendor_city">Vendor City </label>
+						<input type="text" class="form-control" id="vendor_city" placeholder="Vendor City"
+							   name="vendor_city" readonly>
+					</div>
+					<div class="col-6 form-group">
+						<label for="vendor_state">Vendor State </label>
+						<input type="tel" class="form-control" id="vendor_state" placeholder="Vendor State"
+							   name="vendor_state" readonly>
+					</div>
+				</div>
+				<div class=" form-group">
+					<label for="vendor_address">Vendor Address </label>
+					<textarea class="form-control" id="vendor_address" placeholder="Vendor Address"
+							  name="vendor_address"></textarea>
+				</div>
+
+
+				<div class="table-responsive">
+					<hr>
+					<p class="card-description">Invoice Items</p>
+					<table class="table" style="width:100%">
+						<thead>
+						<tr>
+							<th style="width: 20%">Item Name</th>
+							<th style="width: 10%">Item Barcode</th>
+							<th style="width: 30%">Description</th>
+							<th style="width: 8%">HSN code</th>
+							<th style="width: 8%">SKU code</th>
+							<th style="width: 7%">Quantity</th>
+							<th style="width: 10%">Price</th>
+							<th style="width: 4%">Remove</th>
+							<th style="width: 4%">Add</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr class="invoice_item">
+							<td><input class="form-control form-control-sm" type="text"></td>
+							<td><input class="form-control form-control-sm" type="number"></td>
+							<td><input class="form-control form-control-sm" type="text"></td>
+							<td><input class="form-control form-control-sm" type="text"></td>
+							<td><input class="form-control form-control-sm" type="text"></td>
+							<td><input class="form-control form-control-sm" type="number"></td>
+							<td><input class="form-control form-control-sm" type="number"></td>
+							<td>
+								<button type="button" class="btn btn-danger btn-rounded btn-icon"><i
+										class="mdi mdi-delete"></i></button>
+							</td>
+							<td>
+								<button type="button" class="btn btn-success btn-rounded btn-icon"><i
+										class="mdi mdi-plus"></i></button>
+							</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td><strong>Total -</strong></td>
+							<td><input class="form-control form-control-sm" type="number" id="total" name="total"
+									   readonly></td>
+
+						</tr>
+						</tbody>
+					</table>
+				</div>
+				<hr>
+				<p class="card-description">Invoice Description</p>
+
+				<div class="payment repeater">
+					<div class="d-flex justify-content-between align-items-center">
+						<div class="form-check form-check-flat form-check-primary">
+							<label class="form-check-label">
+								<input type="checkbox" class="form-check-input" id="partial-payment"
+									   name="partial-payment">
+								Partial Payments
+								<i class="input-helper"></i>
+							</label>
+						</div>
+						<button data-repeater-create type="button"
+								class="partial_btn btn btn-success btn-rounded btn-icon">
+							<i class="mdi mdi-plus"></i>
+						</button>
+					</div>
+
+					<div class="row">
+						<div class="col-6 form-group">
+							<label for="payment-type">Payment Type</label>
+							<select class="form-control form-control-sm w-100" id="payment-type">
+								<option value="Cash" selected>Cash</option>
+								<option value="Upi">UPI</option>
+								<option value="Debit Card">Debit Card</option>
+								<option value="Credit Card">Credit Card</option>
+								<option value="Finance">Finance</option>
+								<option value="Credit">Credit</option>
+							</select>
+						</div>
+						<div class="col-5 form-group">
+							<label for="payment-amt">Payment Amount</label>
+							<input class="form-control form-control-sm" type="number" id="payment-amt" placeholder="Amount Paid">
+						</div>
+						<div class="col-1">
+
+						</div>
+					</div>
+
+					<div data-repeater-list="partial-payment" class="partial-payment">
+						<div data-repeater-item>
+							<div class="row">
+								<div class="col-6 form-group">
+									<select class="form-control form-control-sm w-100" name="payment-type">
+										<option value="Cash" selected>Cash</option>
+										<option value="Upi">UPI</option>
+										<option value="Debit Card">Debit Card</option>
+										<option value="Credit Card">Credit Card</option>
+										<option value="Finance">Finance</option>
+										<option value="Credit">Credit</option>
+									</select>
+								</div>
+								<div class="col-5 form-group">
+									<input class="form-control form-control-sm" type="number" name="payment-amt"
+										   placeholder="Amount Paid">
+								</div>
+								<div class="col-1 form-group">
+									<button data-repeater-delete type="button"
+											class="btn btn-danger btn-rounded btn-icon"><i class="mdi mdi-delete"></i>
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="form-check form-check-flat form-check-primary">
+					<label class="form-check-label">
+						<input type="checkbox" class="form-check-input" id="transport" name="transport">
+						Transportation
+						<i class="input-helper"></i></label>
+				</div>
+				<div class="transport">
+					<div class="row">
+						<div class="col-6 form-group">
+							<label for="transporter_name">Transporter Name</label>
+							<input type="text" class="form-control" id="transporter_name" placeholder="Transporter Name"
+								   name="transporter_name" required>
+						</div>
+						<div class="col-6 form-group">
+							<label for="transporter_phone">Transporter Number</label>
+							<input type="text" class="form-control" id="transporter_phone"
+								   placeholder="Transporter Contact Number"
+								   name="transporter_phone" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-6 form-group">
+							<label for="transporter_vehicle">Transporter Vehicle Number</label>
+							<input type="text" class="form-control" id="transporter_vehicle"
+								   placeholder="Transporter Vehicle Number"
+								   name="transporter_vehicle" required>
+						</div>
+						<div class="col-6 form-group">
+							<label for="transporter_id">Transporter ID</label>
+							<input type="text" class="form-control" id="transporter_id" placeholder="Transporter ID"
+								   name="transporter_id">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-6 form-group">
+							<label for="transport_amt">Transport Amount Paid</label>
+							<input type="number" class="form-control" id="transport_amt"
+								   placeholder="Transport Amount Paid"
+								   name="transport_amt">
+						</div>
+					</div>
+				</div>
+				<br>
+				<br>
+
+				<button type="submit" class="btn btn-primary mr-2">Submit</button>
+				<button class="btn btn-light">Cancel</button>
+			</form>
+		</div>
+	</div>
+{% endblock %}
+
+{% block script %}
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+	<script src={% static "vendors/jquery.repeater/jquery.repeater.min.js" %}></script>
+	<script src={% static "js/form-repeater.js" %}></script>
+
+
+	<script src={% static "vendors/select2/select2.min.js" %}></script>
+
+	<script src={% static "js/select2.js" %}></script>
+
+	<script>
+
+        function toggleTransportDiv() {
+            var checkbox = document.getElementById("transport");
+            var transportDiv = document.querySelector(".transport");
+
+            if (checkbox.checked) {
+                transportDiv.style.display = "block";
+            } else {
+                transportDiv.style.display = "none";
+            }
+        }
+
+        var checkbox = document.getElementById("transport");
+        checkbox.addEventListener("change", toggleTransportDiv);
+
+        toggleTransportDiv();
+
+        function togglePartialPaymentDiv() {
+            var checkbox = document.getElementById("partial-payment");
+            var partialPaymentDiv = document.querySelector(".partial-payment");
+            var partialBtn = document.querySelector(".partial_btn");
+
+            if (checkbox.checked) {
+                partialPaymentDiv.style.display = "block";
+                partialBtn.style.display = "block";
+                partialBtn.disabled = false;
+            } else {
+                partialPaymentDiv.style.display = "none";
+                partialBtn.style.display = "none";
+                partialBtn.disabled = true;
+            }
+        }
+
+        var checkbox = document.getElementById("partial-payment");
+        checkbox.addEventListener("change", togglePartialPaymentDiv);
+
+        togglePartialPaymentDiv();
+
+	</script>
+
+{% endblock %}

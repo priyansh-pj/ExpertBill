@@ -1,9 +1,36 @@
 from django.db import models
 from organization.models import Organization
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 
 
-# Create your models here.
+gst_id_validator = RegexValidator(
+    regex=r"^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[1-9A-Z]{1}Z[A-Z\d]{1}$",
+    message="GST ID must be in the format XXAAAAA1111A1Z1",
+)
+
+
+class Supplier(models.Model):
+    id = models.AutoField(primary_key=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    gst_id = models.CharField(
+        max_length=15, validators=[gst_id_validator], null=True, blank=True
+    )
+    address = models.TextField(null=True, blank=True)
+    pin_code = models.PositiveIntegerField(
+        validators=[MinValueValidator(100000), MaxValueValidator(999999)]
+    )
+    contact_number = models.BigIntegerField(
+        validators=[MinValueValidator(1000000000), MaxValueValidator(9999999999)],
+        unique=True,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.organization}-{self.name}"
+
+
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
     organization = models.ManyToManyField(Organization)
@@ -37,7 +64,7 @@ class Product(models.Model):
     gst_included = models.BooleanField(default=False)
     manufacturer = models.CharField(max_length=255, blank=True, null=True)
     date_added = models.DateField(auto_now_add=True)
-    is_active = models.BooleanField(default=True)
+    status = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         if self.quantity < 0:

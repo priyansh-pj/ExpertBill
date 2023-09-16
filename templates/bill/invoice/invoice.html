@@ -3,8 +3,7 @@
 {% load static %}
 
 {% block style %}
-	<link rel="stylesheet" href={% static "vendors/select2/select2.min.css" %}>
-	<link rel="stylesheet" href={% static "vendors/select2-bootstrap-theme/select2-bootstrap.min.css" %}>
+
 {% endblock %}
 
 {% block content %}
@@ -62,54 +61,70 @@
 				</div>
 
 
-				<div class="table-responsive">
+				<div class="table-responsive ">
 					<hr>
 					<p class="card-description">Invoice Items</p>
-					<table class="table" style="width:100%">
+
+					<table class="table invoice_data_repeater" style="width:100%">
 						<thead>
 						<tr>
 							<th style="width: 20%">Item Name</th>
 							<th style="width: 10%">Item Barcode</th>
-							<th style="width: 30%">Description</th>
-							<th style="width: 8%">HSN code</th>
-							<th style="width: 8%">SKU code</th>
-							<th style="width: 7%">Quantity</th>
-							<th style="width: 10%">Price</th>
-							<th style="width: 4%">Remove</th>
-							<th style="width: 4%">Add</th>
+							<th style="width: 20%">Description</th>
+							<th style="width: 10%">HSN code</th>
+							<th style="width: 10%">SKU code</th>
+							<th style="width: 10%">Quantity</th>
+							<th style="width: 15%">Price</th>
+							<th style="width: 4%">Action</th>
 						</tr>
 						</thead>
-						<tbody>
-						<tr class="invoice_item">
-							<td><input class="form-control form-control-sm" type="text"></td>
-							<td><input class="form-control form-control-sm" type="number"></td>
-							<td><input class="form-control form-control-sm" type="text"></td>
-							<td><input class="form-control form-control-sm" type="text"></td>
-							<td><input class="form-control form-control-sm" type="text"></td>
-							<td><input class="form-control form-control-sm" type="number"></td>
-							<td><input class="form-control form-control-sm" type="number"></td>
+						<tbody data-repeater-list="invoice_items">
+
+						<tr class="invoice_item" data-repeater-item>
 							<td>
-								<button type="button" class="btn btn-danger btn-rounded btn-icon"><i
-										class="mdi mdi-delete"></i></button>
+								<select class="form-control form-control-sm" name="name" placeholder="Product Name">
+									<option value="" selected></option>
+									<option value="other" >Add New</option>
+								</select>
 							</td>
+							<td><input class="form-control form-control-sm" type="number" name="barcode"></td>
+							<td><input class="form-control form-control-sm" type="text" name="description"
+									   placeholder="Description" readonly></td>
+							<td><input class="form-control form-control-sm" type="text" name="hsn"
+									   placeholder="HSN Code" readonly></td>
+							<td><input class="form-control form-control-sm" type="text" name="sku"
+									   placeholder="SKU Code" readonly></td>
+							<td><input class="form-control form-control-sm" type="number" name="qty"
+									   placeholder="Quantity" readonly></td>
+							<td><input class="form-control form-control-sm price" type="number" name="price"
+									   placeholder="Price" onchange="calculate_total()" readonly></td>
 							<td>
-								<button type="button" class="btn btn-success btn-rounded btn-icon"><i
-										class="mdi mdi-plus"></i></button>
+								<button type="button" class="btn btn-danger btn-rounded btn-icon" data-repeater-delete>
+									<i class="mdi mdi-delete"></i></button>
+								<button type="button" class="btn btn-success btn-rounded btn-icon" data-repeater-create>
+									<i class="mdi mdi-plus"></i></button>
+
 							</td>
 						</tr>
+
+						</tbody>
+						<tfoot>
 						<tr>
 							<td></td>
 							<td></td>
 							<td></td>
 							<td></td>
 							<td></td>
-							<td><strong>Total -</strong></td>
+							<td><strong>Total - </strong></td>
 							<td><input class="form-control form-control-sm" type="number" id="total" name="total"
+									   placeholder="Price"
 									   readonly></td>
+							<td></td>
 
 						</tr>
-						</tbody>
+						</tfoot>
 					</table>
+
 				</div>
 				<hr>
 				<p class="card-description">Invoice Description</p>
@@ -144,7 +159,8 @@
 						</div>
 						<div class="col-5 form-group">
 							<label for="payment-amt">Payment Amount</label>
-							<input class="form-control form-control-sm" type="number" id="payment-amt" placeholder="Amount Paid">
+							<input class="form-control form-control-sm" type="number" id="payment-amt"
+								   placeholder="Amount Paid">
 						</div>
 						<div class="col-1">
 
@@ -178,46 +194,48 @@
 					</div>
 				</div>
 
-
-				<div class="form-check form-check-flat form-check-primary">
-					<label class="form-check-label">
-						<input type="checkbox" class="form-check-input" id="transport" name="transport">
-						Transportation
-						<i class="input-helper"></i></label>
-				</div>
-				<div class="transport">
-					<div class="row">
-						<div class="col-6 form-group">
-							<label for="transporter_name">Transporter Name</label>
-							<input type="text" class="form-control" id="transporter_name" placeholder="Transporter Name"
-								   name="transporter_name" required>
-						</div>
-						<div class="col-6 form-group">
-							<label for="transporter_phone">Transporter Number</label>
-							<input type="text" class="form-control" id="transporter_phone"
-								   placeholder="Transporter Contact Number"
-								   name="transporter_phone" required>
-						</div>
+				<div class="transport_module">
+					<div class="form-check form-check-flat form-check-primary">
+						<label class="form-check-label">
+							<input type="checkbox" class="form-check-input" id="transport" name="transport">
+							Transportation
+							<i class="input-helper"></i></label>
 					</div>
-					<div class="row">
-						<div class="col-6 form-group">
-							<label for="transporter_vehicle">Transporter Vehicle Number</label>
-							<input type="text" class="form-control" id="transporter_vehicle"
-								   placeholder="Transporter Vehicle Number"
-								   name="transporter_vehicle" required>
+					<div class="transport">
+						<div class="row">
+							<div class="col-6 form-group">
+								<label for="transporter_name">Transporter Name</label>
+								<input type="text" class="form-control" id="transporter_name"
+									   placeholder="Transporter Name"
+									   name="transporter_name" required>
+							</div>
+							<div class="col-6 form-group">
+								<label for="transporter_phone">Transporter Number</label>
+								<input type="text" class="form-control" id="transporter_phone"
+									   placeholder="Transporter Contact Number"
+									   name="transporter_phone" required>
+							</div>
 						</div>
-						<div class="col-6 form-group">
-							<label for="transporter_id">Transporter ID</label>
-							<input type="text" class="form-control" id="transporter_id" placeholder="Transporter ID"
-								   name="transporter_id">
+						<div class="row">
+							<div class="col-6 form-group">
+								<label for="transporter_vehicle">Transporter Vehicle Number</label>
+								<input type="text" class="form-control" id="transporter_vehicle"
+									   placeholder="Transporter Vehicle Number"
+									   name="transporter_vehicle" required>
+							</div>
+							<div class="col-6 form-group">
+								<label for="transporter_id">Transporter ID</label>
+								<input type="text" class="form-control" id="transporter_id" placeholder="Transporter ID"
+									   name="transporter_id">
+							</div>
 						</div>
-					</div>
-					<div class="row">
-						<div class="col-6 form-group">
-							<label for="transport_amt">Transport Amount Paid</label>
-							<input type="number" class="form-control" id="transport_amt"
-								   placeholder="Transport Amount Paid"
-								   name="transport_amt">
+						<div class="row">
+							<div class="col-6 form-group">
+								<label for="transport_amt">Transport Amount Paid</label>
+								<input type="number" class="form-control" id="transport_amt"
+									   placeholder="Transport Amount Paid"
+									   name="transport_amt">
+							</div>
 						</div>
 					</div>
 				</div>
@@ -232,15 +250,11 @@
 {% endblock %}
 
 {% block script %}
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 	<script src={% static "vendors/jquery.repeater/jquery.repeater.min.js" %}></script>
 	<script src={% static "js/form-repeater.js" %}></script>
 
-
-	<script src={% static "vendors/select2/select2.min.js" %}></script>
-
-	<script src={% static "js/select2.js" %}></script>
 
 	<script>
 
@@ -281,6 +295,44 @@
 
         togglePartialPaymentDiv();
 
+        var totalInput = document.getElementById("total");
+
+		function calculate_total() {
+            var total = 0;
+
+            document.querySelectorAll(".price").forEach(function(inputElement) {
+                var inputValue = parseFloat(inputElement.value);
+                if (!isNaN(inputValue)) {
+                    total += inputValue;
+                }
+            });
+
+            totalInput.value = total;
+        }
+
+
 	</script>
 
+	<script>
+        (function ($) {
+            'use strict';
+            $(function () {
+                $('.invoice_data_repeater').repeater({
+
+                    show: function () {
+                        console.log($(this));
+                        $(this).slideDown("invoice_item_repeat");
+                        $(this).find('.btn-success[data-repeater-create]').remove();
+                    },
+                    hide: function (deleteElement) {
+                        if (confirm('Are you sure you want to delete this element?')) {
+                            $(this).slideUp(deleteElement);
+                        }
+                    },
+                    isFirstItemUndeletable: true
+                });
+            });
+        })(jQuery);
+
+	</script>
 {% endblock %}

@@ -10,6 +10,7 @@ from store.models import *
 @login_required(login_url="login")
 def invoice(request):
     if request.method == "POST":
+        print(request.POST)
         return redirect("organization")
 
     organization = request.session["organization"]

@@ -17,7 +17,8 @@
 		<div class="card-body">
 			<h4 class="card-title">Invoice Form</h4>
 
-			<form class="forms-invoice">
+			<form class="forms-invoice" method="post" action={% url "invoice" %}>
+				{% csrf_token %}
 				<div class="row">
 					<div class="col-6 form-group">
 						<label for="vendor_name">Vendor Name</label>
@@ -32,9 +33,10 @@
 				</div>
 				<div class="row">
 					<div class="col-6 form-group">
-						<label for="vendor_gstin">Vendor GSTIN </label>
+						<label for="vendor_gstin">Vendor GSTIN <span
+										id="gstin-validation-message"></span></label>
 						<input type="text" class="form-control" id="vendor_gstin" placeholder="Vendor GST"
-							   name="vendor_gstin" required>
+							   name="vendor_gstin">
 					</div>
 					<div class="col-6 form-group">
 						<label for="vendor_pincode">Vendor Pincode </label>
@@ -80,14 +82,15 @@
 						</thead>
 						<tbody data-repeater-list="invoice_items">
 
-						<tr class="invoice_item" data-repeater-item>
+						<tr class="invoice_item" data-repeater-item id="invoice_data_1">
 							<td>
-								<select class="form-control form-control-sm" name="name" placeholder="Product Name">
+								<select class="form-control form-control-sm" name="name[]" id="name" placeholder="Product Name" onchange="product_name(this)" required>
 									<option value="" selected></option>
-									<option value="other" >Add New</option>
+
+									<option value="other" >Create Product</option>
 								</select>
 							</td>
-							<td><input class="form-control form-control-sm" type="number" name="barcode"></td>
+							<td><input class="form-control form-control-sm" type="number" name="barcode" min="0"></td>
 							<td><input class="form-control form-control-sm" type="text" name="description"
 									   placeholder="Description" readonly></td>
 							<td><input class="form-control form-control-sm" type="text" name="hsn"
@@ -95,9 +98,9 @@
 							<td><input class="form-control form-control-sm" type="text" name="sku"
 									   placeholder="SKU Code" readonly></td>
 							<td><input class="form-control form-control-sm" type="number" name="qty"
-									   placeholder="Quantity" readonly></td>
+									   placeholder="Quantity" min="1" readonly></td>
 							<td><input class="form-control form-control-sm price" type="number" name="price"
-									   placeholder="Price" onchange="calculate_total()" readonly></td>
+									   placeholder="Price" onchange="calculate_total()" min="0" readonly></td>
 							<td>
 								<button type="button" class="btn btn-danger btn-rounded btn-icon" data-repeater-delete>
 									<i class="mdi mdi-delete"></i></button>
@@ -117,7 +120,7 @@
 							<td></td>
 							<td><strong>Total - </strong></td>
 							<td><input class="form-control form-control-sm" type="number" id="total" name="total"
-									   placeholder="Price"
+									   placeholder="Price" min="0"
 									   readonly></td>
 							<td></td>
 
@@ -243,7 +246,7 @@
 				<br>
 
 				<button type="submit" class="btn btn-primary mr-2">Submit</button>
-				<button class="btn btn-light">Cancel</button>
+				<button href={% url "organization" %} class="btn btn-light">Cancel</button>
 			</form>
 		</div>
 	</div>
@@ -254,8 +257,6 @@
 
 	<script src={% static "vendors/jquery.repeater/jquery.repeater.min.js" %}></script>
 	<script src={% static "js/form-repeater.js" %}></script>
-
-
 	<script>
 
         function toggleTransportDiv() {
@@ -310,29 +311,109 @@
             totalInput.value = total;
         }
 
-
-	</script>
-
-	<script>
         (function ($) {
-            'use strict';
-            $(function () {
-                $('.invoice_data_repeater').repeater({
+			'use strict';
+			$(function () {
+				$('.invoice_data_repeater').repeater({
 
-                    show: function () {
-                        console.log($(this));
-                        $(this).slideDown("invoice_item_repeat");
-                        $(this).find('.btn-success[data-repeater-create]').remove();
-                    },
-                    hide: function (deleteElement) {
-                        if (confirm('Are you sure you want to delete this element?')) {
-                            $(this).slideUp(deleteElement);
+					show: function () {
+						// Generate a unique ID for the item
+						var uniqueId = 'invoice_data_' + $('.invoice_data_repeater .invoice_item').length;
+
+						// Set the unique ID as an attribute for the item
+						$(this).attr('id', uniqueId);
+						$(this).slideDown("invoice_item_repeat");
+						$(this).find('.btn-success[data-repeater-create]').remove();
+					},
+					hide: function (deleteElement) {
+						if (confirm('Are you sure you want to delete this element?')) {
+							$(this).slideUp(deleteElement);
+						}
+					},
+					isFirstItemUndeletable: true
+				});
+			});
+		})(jQuery);
+
+
+
+        function validateGSTIN(gstin) {
+            if (gstin === "") {
+                return true;
+            }
+            var gstinRegex = /^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[1-9A-Z]{1}Z[A-Z\d]{1}$/;
+            return gstin.match(gstinRegex) !== null;
+        }
+
+        function handleInputChange() {
+            var inputElement = document.getElementById("vendor_gstin");
+            var validationMessage = document.getElementById("gstin-validation-message");
+            if (inputElement.value == "") {
+                validationMessage.textContent = "";
+                validationMessage.style.color = "";
+            } else if (validateGSTIN(inputElement.value)) {
+                validationMessage.textContent = "(Valid GSTIN)";
+                validationMessage.style.color = "green";
+            } else {
+                validationMessage.textContent = "(Invalid GSTIN. Please enter a valid GSTIN.)";
+                validationMessage.style.color = "red";
+            }
+        }
+
+        function handleFormSubmit(event) {
+            var inputElement = document.getElementById("vendor_gstin");
+            if (!validateGSTIN(inputElement.value)) {
+                event.preventDefault();
+                alert("Please enter a valid GSTIN before submitting.");
+            }
+        }
+
+        var gstinInput = document.getElementById("vendor_gstin");
+        gstinInput.addEventListener("input", handleInputChange);
+
+        var organizationForm = document.getElementById("vendor_gstin");
+        organizationForm.addEventListener("submit", handleFormSubmit);
+
+        $(document).ready(function () {
+            $('#vendor_pincode').blur(function () {
+                var pincode = $(this).val();
+                if (pincode.length == 6) {
+                    $.ajax({
+                        url: 'https://api.postalpincode.in/pincode/' + pincode,
+                        type: 'GET',
+                        success: function (result) {
+                            if (result[0].Status == 'Success') {
+                                var city = result[0].PostOffice[0].District;
+                                var state = result[0].PostOffice[0].State;
+                                $('#vendor_city').val(city);
+                                $('#vendor_state').val(state);
+                            }
                         }
-                    },
-                    isFirstItemUndeletable: true
-                });
+                    });
+                }
             });
-        })(jQuery);
+        });
+	</script>
+	<script>
+	function product_name(element){
+		var parentId = $(element).closest('tr').attr('id');
+		if ($(element).val() === 'other') {
+			var name = $(element).attr('name')
+			var newInput = $('<input>', {
+						class: 'form-control form-control-sm',
+						type: 'text',
+						name: name,
+						placeholder: 'Product Name',
+						required: true,
+					});
+					$(element).replaceWith(newInput);
+        	$('#' + parentId + ' input').removeAttr('readonly');
+
+    	}
+	}
+	</script>
+	<script>
 
 	</script>
+
 {% endblock %}

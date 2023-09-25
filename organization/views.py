@@ -55,9 +55,8 @@ def create_organization(request):
             "pincode": request.POST.get("pincode"),
             "address": request.POST.get("address"),
         }
-        Organization.create(organization, request.user)
-        print(organization)
-        return redirect("organization_create")
+        Organization.create_organization_and_employee(organization, request.user)
+        return redirect("organizations")
     return render(request, "organization/create.html", data)
 
 

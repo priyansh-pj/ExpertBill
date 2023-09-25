@@ -78,17 +78,17 @@
 					<table class="table invoice_data_repeater" style="width:100%">
 						<thead>
 						<tr>
-							<th style="width: 8%; padding: 0.2rem 0.5rem;">Barcode</th>
+							<th style="width: 9%; padding: 0.2rem 0.5rem;">Barcode</th>
 							<th style="width: 17%; padding: 0.2rem 0.5rem;">Item Name</th>
-							<th style="width: 15%; padding: 0.2rem 0.5rem;">Description</th>
-							<th style="width: 6%; padding: 0.2rem 0.5rem;">HSN</th>
-							<th style="width: 6%; padding: 0.2rem 0.5rem;">SKU</th>
-							<th style="width: 6%; padding: 0.2rem 0.5rem;">Quantity</th>
-							<th style="width: 9%; padding: 0.2rem 0.5rem;">Rate</th>
+							<th style="width: 14%; padding: 0.2rem 0.5rem;">Description</th>
+							<th style="width: 7%; padding: 0.2rem 0.5rem;">HSN</th>
+							<th style="width: 7%; padding: 0.2rem 0.5rem;">SKU</th>
+							<th style="width: 7%; padding: 0.2rem 0.5rem;">Qty</th>
+							<th style="width: 11%; padding: 0.2rem 0.5rem;">Rate</th>
 							<th style="width: 6%; padding: 0.2rem 0.5rem;">GST</th>
 							<th style="width: 6%; padding: 0.2rem 0.5rem;">Discount</th>
-							<th style="width: 9%; padding: 0.2rem 0.5rem;">Price</th>
-							<th style="width: 4%; padding: 0.2rem 0.5rem;">Action</th>
+							<th style="width: 11%; padding: 0.2rem 0.5rem;">Price</th>
+							<th style="width: 8%; padding: 0.2rem 0.5rem;">Action</th>
 						</tr>
 						</thead>
 						<tbody data-repeater-list="invoice_items">
@@ -98,7 +98,7 @@
 																	   type="text" name="barcode" min="0"></td>
 
 							<td style="padding: 0.2rem 0.5rem;">
-								<select class="form-control form-control-sm px-1" name="name"
+								<select class="form-control form-control-sm px-1" name="product"
 										onchange="product_name(this)"
 										required>
 									<option value="" selected></option>
@@ -119,15 +119,15 @@
 																	   type="text" name="qty"
 																	   placeholder="Qty" min="1" value="1"></td>
 							<td style="padding: 0.2rem 0.5rem;"><input class="form-control form-control-sm rate px-1"
-																	   type="number" name="rate"
+																	   type="text" name="rate"
 																	   placeholder="Rate" min="0"></td>
 							<td style="padding: 0.2rem 0.5rem;"><input class="form-control form-control-sm gst px-1"
-																	   type="number" name="gst"
+																	   type="text" name="gst"
 																	   placeholder="Gst" min="0" max="100" readonly>
 							</td>
 							<td style="padding: 0.2rem 0.5rem;"><input
-									class="form-control form-control-sm discount px-1" type="number" name="discount"
-									placeholder="Discount" min="0" max="100"></td>
+									class="form-control form-control-sm discount px-1" type="text" name="discount"
+									placeholder="Disc" min="0" max="100"></td>
 							<td style="padding: 0.2rem 0.5rem;"><input class="form-control form-control-sm price  px-1"
 																	   type="text" name="price"
 																	   placeholder="Price" onchange="calculate_total()"
@@ -218,7 +218,7 @@
 				<div class="transport_module">
 					<div class="form-check form-check-flat form-check-primary">
 						<label class="form-check-label">
-							<input type="checkbox" class="form-check-input" id="transport" name="transport">
+							<input type="checkbox" class="form-check-input" id="transport" name="transport_status">
 							Transportation
 							<i class="input-helper"></i></label>
 					</div>
@@ -307,22 +307,36 @@
             var inputFields = partialPaymentDiv.querySelectorAll("input");
             var selectFields = partialPaymentDiv.querySelectorAll("select");
 
+    		var partialInputs = document.getElementById("partials_1").querySelectorAll("input")[0];
+
+
             var partialBtn = document.querySelector(".partial_btn");
 
             if (checkbox.checked) {
                 partialPaymentDiv.style.display = "block";
                 partialBtn.style.display = "block";
+
+				partialInputs.value = 0;
+				partialInputs.readOnly = false;
+
                 inputFields.forEach(function (input) {
                     input.disabled = false;
+                                        input.readOnly = false;
+
                 });
                 selectFields.forEach(function (select) {
                     select.disabled = false;
+
 
                 });
             } else {
 
                 partialPaymentDiv.style.display = "none";
                 partialBtn.style.display = "none";
+
+                partialInputs.value = document.getElementById("total").value;
+				partialInputs.readOnly = true;
+
                 inputFields.forEach(function (input) {
                     input.disabled = true;
                 });
@@ -401,6 +415,7 @@
             var parentId = $(element).closest('tr').attr('id');
             if ($(element).val() === 'other') {
                 var name = $(element).attr('name')
+				name = name.replace("product", "name");
                 var newInput = $('<input>', {
                     class: 'form-control form-control-sm',
                     type: 'text',
@@ -439,9 +454,12 @@
                 const rowPrice = parseFloat($(this).find('.price').val()) || 0;
                 total += rowPrice;
             });
-            console.log(total)
+
             // Update the #total element
             document.getElementById("total").value = total.toFixed(2);
+            var partialInputs = document.getElementById("partials_1").querySelectorAll("input")[0];
+            partialInputs.value = total.toFixed(2);
+			partialInputs.readOnly = true;
 
 
         }
@@ -474,7 +492,6 @@
                                 deleteElement();
 								calculate_total();
 							});
-
                         }
 
                     },
@@ -491,7 +508,10 @@
                         var newItem = $(this);
                         newItem.attr('id', uniqueId);
                         newItem.appendTo('.partial_payment').slideDown();
+
                         newItem.find('label').remove();
+						newItem.find('input').prop('readonly', false);
+                        newItem.find('input').prop('value', 0);
                         newItem.find('.btn-success[data-repeater-create]').remove();
                     },
                     hide: function (deleteElement) {
@@ -508,5 +528,6 @@
         })(jQuery);
 
 	</script>
+
 
 {% endblock %}

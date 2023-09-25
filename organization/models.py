@@ -39,23 +39,30 @@ class Organization(models.Model):
 
     @classmethod
     @transaction.atomic
-    def create(cls, organization, user):
-        organization = cls.objects.create(
-            name=organization["name"],
-            email=organization["email"],
-            gst_id=organization["gstin"],
-            address=organization["address"],
-            pin_code=organization["pincode"],
-            contact_number=organization["phone"],
-        )
-        organization.features.add(Role.objects.get(id=1))
+    def create_organization_and_employee(cls, organization_data, user):
+        try:
+            organization = cls.objects.create(
+                name=organization_data["name"],
+                email=organization_data["email"],
+                gst_id=organization_data["gstin"],
+                address=organization_data["address"],
+                pin_code=organization_data["pincode"],
+                contact_number=organization_data["phone"],
+            )
 
-        employee = Employee.objects.create(
-            profile=user,
-            organization=organization,
-        )
+            organization.features.add(Role.objects.get(id=1))
 
-        employee.roles.add(Role.objects.get(id=1))
+            employee = Employee.objects.create(
+                profile=user,
+                organization=organization,
+            )
+
+            employee.roles.add(Role.objects.get(id=1))
+
+            return organization, employee
+        except Exception as e:
+            print(f"Error creating organization and employee: {str(e)}")
+            return None, None
 
 
 class Employee(models.Model):

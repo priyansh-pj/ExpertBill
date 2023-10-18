@@ -10,6 +10,7 @@ class Invoice(models.Model):
     invoice_organization = models.IntegerField()
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
+    date = models.DateField()
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     def __str__(self):
@@ -17,12 +18,10 @@ class Invoice(models.Model):
 
     @classmethod
     @transaction.atomic
-    def create_invoice(cls, organization, supplier, total):
+    def create_invoice(cls, organization, supplier, total, date):
         try:
             invoice = cls.objects.create(
-                organization=organization,
-                supplier=supplier,
-                total=float(total) if total.isdigit() else 0,
+                organization=organization, supplier=supplier, total=total, date=date
             )
             return invoice
         except Exception as e:
@@ -50,16 +49,14 @@ class InvoicePayment(models.Model):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     method = models.CharField(max_length=100, default="Cash")
     payment = models.IntegerField()
+    payment_date = models.DateTimeField(auto_now_add=True)
 
     @classmethod
     @transaction.atomic
     def insert_payment_method(cls, invoice, method, payment):
         try:
-            cls.objects.create(
-                invoice=invoice,
-                method=method,
-                payment=float(payment) if payment.isdigit() else 0,
-            )
+            payment = float(payment) if payment else 0.0
+            cls.objects.create(invoice=invoice, method=method, payment=payment)
         except Exception as e:
             print(f"Error inserting payment: {str(e)}")
 
@@ -69,23 +66,25 @@ class InvoiceProduct(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    gst = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     sub_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    registration_date = models.DateTimeField(auto_now_add=True)
 
     @classmethod
     @transaction.atomic
     def register_invoice_product(
-        cls, organization, invoice, product, gst, discount, sub_total
+        cls, organization, invoice, product, discount, sub_total
     ):
+        print(organization, invoice, product, discount, sub_total)
+        discount = float(discount)
+        sub_total = float(sub_total)
         try:
             cls.objects.create(
                 organization=organization,
                 invoice=invoice,
                 product=product,
-                gst=float(gst) if gst.isdigit() else 0,
-                discount=float(discount) if discount.isdigit() else 0,
-                sub_total=float(sub_total) if sub_total.isdigit() else 0,
+                discount=discount,
+                sub_total=sub_total,
             )
         except Exception as e:
             print(f"Error creating Invoice Product: {str(e)}")

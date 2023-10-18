@@ -5,7 +5,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator, RegexVa
 
 gst_id_validator = RegexValidator(
     regex=r"^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[1-9A-Z]{1}Z[A-Z\d]{1}$",
-    message="GST ID must be in the format XXAAAAA1111A1Z1",
+    message="GST ID must be in the format XXAAAAA1111A1Z1 (two digits, five letters, four digits, one letter, one digit, one letter, one digit)",
 )
 
 
@@ -20,10 +20,7 @@ class Supplier(models.Model):
     pin_code = models.PositiveIntegerField(
         validators=[MinValueValidator(100000), MaxValueValidator(999999)]
     )
-    contact_number = models.BigIntegerField(
-        validators=[MinValueValidator(1000000000), MaxValueValidator(9999999999)],
-        unique=True,
-    )
+    contact_number = models.CharField(max_length=15, unique=True, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.BooleanField(default=True)
 
@@ -57,10 +54,8 @@ class Product(models.Model):
     description = models.TextField(blank=True, null=True)
     hsn_code = models.CharField(max_length=255, default="", blank=True, null=True)
     sku_code = models.CharField(max_length=255, default="", blank=True, null=True)
-    quantity = models.IntegerField(default=0)
-
+    quantity = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-
     cgst = models.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -99,6 +94,10 @@ class Product(models.Model):
         cgst,
     ):
         try:
+            quantity = int(quantity)
+            price = float(price)
+            cgst = float(cgst)
+
             product = cls.objects.create(
                 organization=organization,
                 name=name,
@@ -106,20 +105,57 @@ class Product(models.Model):
                 description=description,
                 hsn_code=hsn_code,
                 sku_code=sku_code,
-                quantity=int(quantity) if quantity.isdigit() else 0,
-                price=float(price) if price.replace(".", "").isdigit() else 0.0,
-                cgst=int(cgst) if cgst.isdigit() else 0,
+                quantity=quantity,
+                price=price,
+                cgst=cgst,
             )
             return product
         except Exception as e:
             print(f"Error creating Product: {str(e)}")
 
     def save(self, *args, **kwargs):
-        if self.quantity < 0:
-            self.quantity = 0
-        self.cgst, self.sgst, self.igst = (
-            self.cgst / 100,
-            self.sgst / 100,
-            self.igst / 100,
-        )
-        super().save(*args, **kwargs)
+        try:
+            if self.quantity < 0:
+                self.quantity = 0
+
+            # Ensure cgst, sgst, and igst are converted to float
+            self.cgst, self.sgst, self.igst = (
+                float(self.cgst) / 100,
+                float(self.sgst) / 100,
+                float(self.igst) / 100,
+            )
+
+            super().save(*args, **kwargs)
+        except Exception as e:
+            print(f"Error saving Product: {str(e)}")
+
+
+from bill.models import Invoice
+
+
+class Expenses(models.Model):
+    id = models.AutoField(primary_key=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    expense_name = models.CharField(max_length=255, null=False, blank=False)
+    type = models.CharField(max_length=255, null=False, blank=False)
+    description = models.TextField(null=True, blank=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.organization} - {self.expense_name} ({self.description})"
+
+    @classmethod
+    @transaction.atomic
+    def transport_save(cls, name, vehical_number, phone, id, amount, invoice):
+        try:
+            expense = cls.objects.create(
+                type="Transport",
+                expense_name=name,
+                description=f"Transport Id: {id}, Transport Name: {name}, Transport Phone: {phone}, Vehical Number: {vehical_number}",
+                amount=amount,
+                invoice=invoice,
+            )
+            return expense
+        except Exception as e:
+            print(f"Error creating transport expense: {str(e)}")

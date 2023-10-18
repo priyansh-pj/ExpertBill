@@ -1,3 +1,48 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse
 
-# Create your views here.
+from django.contrib.auth.decorators import login_required
+from .models import *
+
+
+@login_required(login_url="login")
+def inventory(request):
+    organization = request.session["organization"]
+    role = request.session["role"]
+
+    data = {
+        "title": organization.get("name"),
+        "first_name": request.user.first_name,
+        "last_name": request.user.last_name,
+        "role": ", ".join(role),
+        "organization": organization,
+        "breadcrumb": [reverse("organization")],
+        "products": Product.objects.filter(
+            organization=Organization.objects.get(
+                org_id=organization.get("organization")
+            )
+        ).order_by("name"),
+    }
+    return render(request, "store/inventory.html", data)
+
+
+@login_required(login_url="login")
+def supplier_details(request):
+    organization = request.session["organization"]
+    role = request.session["role"]
+
+    data = {
+        "title": organization.get("name"),
+        "first_name": request.user.first_name,
+        "last_name": request.user.last_name,
+        "role": ", ".join(role),
+        "organization": organization,
+        "breadcrumb": [reverse("organization")],
+        "suppliers": Supplier.objects.filter(
+            organization=Organization.objects.get(
+                org_id=organization.get("organization")
+            )
+        ).order_by("name"),
+    }
+
+    return render(request, "store/supplier.html", data)

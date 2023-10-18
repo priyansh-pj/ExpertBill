@@ -1,10 +1,10 @@
-from django.shortcuts import render, redirect
-from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import render, redirect
+from django.urls import reverse
 
-from .models import *
 from store.models import *
+from .models import *
 
 
 # Create your views here.
@@ -14,8 +14,9 @@ def invoice(request):
     role = request.session["role"]
     if request.method == "POST":
         data = invoice_post_data(request.POST)
+        print(data)
         register_invoice(data, organization)
-        return redirect("organization")
+        return redirect("invoice")
     data = {
         "title": organization.get("name"),
         "first_name": request.user.first_name,
@@ -23,8 +24,35 @@ def invoice(request):
         "role": ", ".join(role),
         "organization": organization,
         "breadcrumb": [reverse("organization")],
+        "products": Product.objects.filter(
+            organization=Organization.objects.get(
+                org_id=organization.get("organization")
+            )
+        ).order_by("name"),
     }
     return render(request, "bill/invoice/invoice.html", data)
+
+
+@login_required(login_url="login")
+def list_invoice(request):
+    organization = request.session["organization"]
+    role = request.session["role"]
+
+    data = {
+        "title": organization.get("name"),
+        "first_name": request.user.first_name,
+        "last_name": request.user.last_name,
+        "role": ", ".join(role),
+        "organization": organization,
+        "breadcrumb": [reverse("organization")],
+        "invoices": Invoice.objects.filter(
+            organization=Organization.objects.get(
+                org_id=organization.get("organization")
+            )
+        ).order_by("invoice_organization"),
+    }
+
+    return render(request, "bill/invoice/list.html", data)
 
 
 def register_invoice(data, organization):
@@ -41,8 +69,11 @@ def register_invoice(data, organization):
             data.get("vendor_pincode"),
             data.get("vendor_phone"),
         )
+
     finally:
-        invoice = Invoice.create_invoice(organization, supplier, data.get("total"))
+        invoice = Invoice.create_invoice(
+            organization, supplier, data.get("total"), data.get("invoice_date")
+        )
 
         for payments in data.get("payment"):
             method = payments.get("payment-type")
@@ -77,7 +108,6 @@ def register_invoice(data, organization):
                     organization,
                     invoice,
                     product,
-                    items.get("gst"),
                     items.get("discount"),
                     items.get("price"),
                 )
@@ -87,9 +117,19 @@ def register_invoice(data, organization):
                     organization,
                     invoice,
                     product,
-                    items.get("gst"),
                     items.get("discount"),
                     items.get("price"),
+                )
+
+            if data.get("transport_status") == "on":
+                transport = data.get("transport")
+                Expenses.transport_save(
+                    name=transport.get("transporter_name"),
+                    vehical_number=transport.get("transporter_vehicle"),
+                    phone=transport.get("transporter_phone"),
+                    id=transport.get("transporter_id"),
+                    amount=transport.get("transport_amt"),
+                    invoice=invoice,
                 )
 
 
@@ -104,6 +144,7 @@ def invoice_post_data(post_data):
         "vendor_phone",
         "vendor_gstin",
         "vendor_pincode",
+        "invoice_date",
         "vendor_city",
         "vendor_state",
         "vendor_address",
@@ -149,25 +190,18 @@ def invoice_post_data(post_data):
             invoice_items[index][field_name] = value
 
         elif key.startswith("payment["):
-            index = key.split("[")[1].split("]")[0]  # Extract the index from the key
-            field_name = key.split("[")[2].split("]")[
-                0
-            ]  # Extract the field name from the key
+            index = key.split("[")[1].split("]")[0]
+            field_name = key.split("[")[2].split("]")[0]
 
-            # Ensure the index is valid
             try:
                 index = int(index)
             except ValueError:
                 continue
 
-            # Create a new payment dictionary if it doesn't exist yet
             if len(payment) <= index:
                 payment.append({})
-
-            # Assign the value to the appropriate field within the payment dictionary
             payment[index][field_name] = value
 
-    # Add invoice_items and payment arrays to the transformed dictionary
     transformed_data["invoice_items"] = invoice_items
     transformed_data["payment"] = payment
 

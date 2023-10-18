@@ -1,0 +1,60 @@
+{% extends 'template.html' %}
+
+{% load static %}
+
+{% block style %}
+	<link rel="stylesheet" href={% static "vendors/datatables.net-bs4/dataTables.bootstrap4.css" %}>
+{% endblock %}
+{% block content %}
+
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb bg-primary">
+			<li class="breadcrumb-item"><a href={{ breadcrumb.0 }}>Organization</a></li>
+			<li class="breadcrumb-item active" aria-current="page">List Invoice</li>
+		</ol>
+	</nav>
+
+	<div class="card">
+		<div class="card-body">
+			<h4 class="card-title">List Invoice</h4>
+			<hr>
+			<div class="row">
+				<div class="col-12">
+					<div class="table-responsive">
+						<table id="order-listing" class="table">
+							<thead>
+							<tr>
+								<th>Invoice #</th>
+								<th>Date</th>
+								<th>Supplier</th>
+								<th>Amount</th>
+								<th>View</th>
+							</tr>
+							</thead>
+							<tbody>
+							{% for invoice in invoices %}
+								<tr>
+									<td>{{ invoice.invoice_organization }}</td>
+									<td>{{ invoice.date }}</td>
+									<td>{{ invoice.supplier.name }}</td>
+									<td>₹ {{ invoice.total }}</td>
+									<td>
+										<button class="btn btn-outline-primary">View</button>
+									</td>
+								</tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+{% endblock %}
+
+{% block script %}
+	<script src={% static "vendors/datatables.net/jquery.dataTables.js" %}></script>
+	<script src={% static "vendors/datatables.net-bs4/dataTables.bootstrap4.js" %}></script>
+	<script src={% static "js/data-table.js" %}></script>
+{% endblock %}

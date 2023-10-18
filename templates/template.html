@@ -169,16 +169,16 @@
                     <li class="nav-item"> <a class="nav-link" href={% url "invoice" %}>Invoice</a></li>
                   </ul>
                   <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Invoice History</a></li>
+                    <li class="nav-item"> <a class="nav-link" href={% url "list_invoice" %}>Invoice History</a></li>
                   </ul>
                   <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Inventory</a></li>
+                    <li class="nav-item"> <a class="nav-link" href={% url "inventory" %}>Inventory</a></li>
                   </ul>
                   <ul class="nav flex-column sub-menu">
                     <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Customer Details</a></li>
                   </ul>
                   <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Supplier Details</a></li>
+                    <li class="nav-item"> <a class="nav-link" href={% url "supplier" %}>Supplier Details</a></li>
                   </ul>
                   <ul class="nav flex-column sub-menu">
                     <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Accounts</a></li>
@@ -242,7 +242,7 @@
                 </a>
                 <div class="collapse" id="production">
                   <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Inventory</a></li>
+                    <li class="nav-item"> <a class="nav-link" href={% url "inventory" %}>Inventory</a></li>
                   </ul>
                   <ul class="nav flex-column sub-menu">
                     <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Manifacture Parts</a></li>
@@ -279,8 +279,7 @@
   <!-- container-scroller -->
   <!-- base:js -->
 
-      {% block script %}
-      {% endblock %}
+
 
   <script src={% static "vendors/js/vendor.bundle.base.js" %}></script>
   <!-- endinject -->
@@ -290,6 +289,9 @@
   <script src={% static "js/off-canvas.js" %}></script>
   <script src={% static "js/hoverable-collapse.js" %}></script>
   <script src={% static "js/template.js" %}></script>
+
+  {% block script %}
+  {% endblock %}
   <!-- endinject -->
   <!-- plugin js for this page -->
   <!-- End plugin js for this page -->

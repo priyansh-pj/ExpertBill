@@ -7,6 +7,8 @@ from .models import *
 
 @login_required(login_url="login")
 def inventory(request):
+    if "organization" not in request.session or "role" not in request.session:
+        return redirect("organizations")
     organization = request.session["organization"]
     role = request.session["role"]
 
@@ -28,6 +30,8 @@ def inventory(request):
 
 @login_required(login_url="login")
 def supplier_details(request):
+    if "organization" not in request.session or "role" not in request.session:
+        return redirect("organizations")
     organization = request.session["organization"]
     role = request.session["role"]
 

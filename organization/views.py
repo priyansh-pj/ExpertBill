@@ -1,6 +1,7 @@
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from hr.models import Employee, AppliedOrganization
 
 from .models import *
 
@@ -84,7 +85,7 @@ def organization_verify(request, organization_id):
 
 @login_required(login_url="login")
 def organization(request):
-    if "organization" not in request.session and "role" not in request.session:
+    if "organization" not in request.session or "role" not in request.session:
         return redirect("organizations")
     organization = request.session["organization"]
     role = request.session["role"]

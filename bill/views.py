@@ -10,6 +10,8 @@ from .models import *
 # Create your views here.
 @login_required(login_url="login")
 def invoice(request):
+    if "organization" not in request.session or "role" not in request.session:
+        return redirect("organizations")
     organization = request.session["organization"]
     role = request.session["role"]
     if request.method == "POST":
@@ -35,6 +37,8 @@ def invoice(request):
 
 @login_required(login_url="login")
 def list_invoice(request):
+    if "organization" not in request.session or "role" not in request.session:
+        return redirect("organizations")
     organization = request.session["organization"]
     role = request.session["role"]
 

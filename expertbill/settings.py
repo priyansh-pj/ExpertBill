@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "organization.apps.OrganizationConfig",
     "store.apps.StoreConfig",
     "bill.apps.BillConfig",
+    "hr.apps.HrConfig",
 ]
 
 MIDDLEWARE = [

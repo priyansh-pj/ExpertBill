@@ -1,0 +1,61 @@
+{% extends 'template.html' %}
+
+{% load static %}
+
+{% block style %}
+	<link rel="stylesheet" href={% static "vendors/datatables.net-bs4/dataTables.bootstrap4.css" %}>
+{% endblock %}
+{% block content %}
+
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb bg-primary">
+			<li class="breadcrumb-item"><a href={{ breadcrumb.0 }}>Organization</a></li>
+			<li class="breadcrumb-item active" aria-current="page">Add Employee</li>
+		</ol>
+	</nav>
+
+	<div class="card">
+		<div class="card-body">
+			<h4 class="card-title">Candidate List</h4>
+			<hr>
+			<div class="row">
+				<div class="col-12">
+					<div class="table-responsive">
+						<table id="order-listing" class="table">
+							<thead>
+							<tr>
+								<th>S no. #</th>
+								<th>Name</th>
+                                <th>Email</th>
+								<th>Time</th>
+								<th>Action</th>
+							</tr>
+							</thead>
+							<tbody>
+							{% for candidate in candidates %}
+								<tr>
+									<td>{{ forloop.counter }}</td>
+
+									<td>{{ candidate.profile.first_name }} {{ candidate.profile.last_name }}</td>
+									<td>{{ candidate.profile.email }}</td>
+									<td>{{ candidate.time }}</td>
+									<td>
+										<a class="btn btn-outline-primary" href="{% url 'candidate' candidate.id %}">Action</a>
+									</td>
+								</tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+{% endblock %}
+
+{% block script %}
+	<script src={% static "vendors/datatables.net/jquery.dataTables.js" %}></script>
+	<script src={% static "vendors/datatables.net-bs4/dataTables.bootstrap4.js" %}></script>
+	<script src={% static "js/data-table.js" %}></script>
+{% endblock %}

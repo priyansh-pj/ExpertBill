@@ -5,7 +5,7 @@
     <option name="enabledOnSave" value="true" />
     <option name="executionMode" value="BINARY" />
     <option name="pathToExecutable" value="$USER_HOME$/anaconda3/bin/black" />
-    <option name="sdkUUID" value="8b1da403-95ce-4cf0-89ed-693fa806ef3c" />
+    <option name="sdkName" value="Python 3.9 (ExpertBill)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.9 (expertbill)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.9 (ExpertBill)" project-jdk-type="Python SDK" />
 </project>

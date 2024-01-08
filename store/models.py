@@ -45,6 +45,42 @@ class Supplier(models.Model):
         except Exception as e:
             print(f"Error creating supplier: {str(e)}")
 
+class Customer(models.Model):
+    id = models.AutoField(primary_key=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    gst_id = models.CharField(
+        max_length=15, validators=[gst_id_validator], null=True, blank=True
+    )
+    address = models.TextField(null=True, blank=True)
+    pin_code = models.PositiveIntegerField(
+        validators=[MinValueValidator(100000), MaxValueValidator(999999)]
+    )
+    contact_number = models.CharField(max_length=15, unique=True, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.organization}-{self.name}"
+
+    @classmethod
+    @transaction.atomic
+    def register_customer(
+        cls, organization, name, gst_id, address, pin_code, contact_number
+    ):
+        try:
+            supplier = cls.objects.create(
+                organization=organization,
+                name=name,
+                gst_id=gst_id,
+                address=address,
+                pin_code=pin_code,
+                contact_number=contact_number,
+            )
+            return supplier
+        except Exception as e:
+            print(f"Error creating supplier: {str(e)}")
+
 
 class Product(models.Model):
     id = models.AutoField(primary_key=True)

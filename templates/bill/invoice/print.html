@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice</title>
+    <style>
+        /* General styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: white;
+            color: black;
+            font-size: 12px;
+        }
+        .invoice-container {
+            width: 80mm; /* Adjust the width according to your specific printer */
+            margin: auto;
+        }
+        hr {
+            border: none;
+            border-top: 1px dashed #000;
+            margin: 5px 0;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .text-center {
+            text-align: center;
+        }
+
+        /* Print styles */
+        @media print {
+            .invoice-container {
+                width: 100%;
+            }
+            hr {
+                page-break-after: always;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <!-- Header -->
+        <header>
+            <h1 class="text-center">{{ organization.name }}</h1>
+            <h2 class="text-center">A CLOTHING STORE</h2>
+            <p class="text-center">{{ organization.name }}</p>
+            <p class="text-center">Phone: {{ organization.contact_number }}</p>
+            <p class="text-center">Email: {{ organization.email }}</p>
+            <hr>
+        </header>
+
+        <!-- Customer Info -->
+        <div class="customer-info">
+            <p>Customer: {{ invoice.customer.name }}</p>
+            <p>Mobile: {{ invoice.customer.contact_number }}</p>
+            <p>User: {{ first_name }} {{ last_name}}</p>
+            <hr>
+        </div>
+
+        <!-- Invoice Details -->
+        <div class="invoice-details">
+            <p>Bill No.: {{ invoice.id }}</p>
+            <p>Date: {{ invoice.date|date:"d/m/Y" }}</p>
+            <hr>
+        </div>
+
+        <!-- Products Table -->
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Qty</th>
+                    <th>Rate</th>
+                    <th>Dis %</th>
+                    <th>Amt</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in products %}
+                <tr>
+
+                    <td>{{forloop.counter}}</td>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.rate }}</td>
+                    <td>{{ item.discount}}</td>
+                    <td>{{ item.sub_total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <hr>
+
+        <!-- Totals -->
+        <div class="totals">
+            <table width="100%">
+                <tr>
+                    <td style="width:50%"></td>
+                    <td class="text-right">Sub Total:</td>
+                    <td class="text-right">₹ {{ invoice.sub_total }}</td>
+                </tr>
+                <tr>
+                    <td style="width:50%"></td>
+                    <td class="text-right">Round off:</td>
+                    <td class="text-right">₹ {{ invoice.round }}</td>
+                </tr>
+
+
+                <tr>
+                    <td style="width:50%"></td>
+                    <td class="text-right">Grand Total:</td>
+                    <td class="text-right">₹ {{ invoice.total }}</td>
+                </tr>
+            </table>
+            <hr>
+        </div>
+
+
+        <!-- Amount in Words -->
+        <div class="amount-in-words">
+            <p>₹ {{ invoice.word|title }} Rupees Only</p>
+            <hr>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>Terms & Conditions:</p>
+            <ul>
+                <li>Goods once sold not be taken back & no cash Refund.</li>
+                <li>Goods may be exchanged in week only on the.</li>
+                <li>No guarantee for Colours & Pillings.</li>
+            </ul>
+            <p class="text-center">E.&.O.E</p>
+            <p class="text-center">For "MAYRA"</p>
+            <p class="text-center">!!! Thanks !!! Visit Again !!!</p>
+        </footer>
+    </div>
+
+    <!-- Print Button -->
+    <div class="no-print text-center">
+        <button onclick="window.print()">Print this receipt</button>
+    </div>
+</body>
+</html>

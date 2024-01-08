@@ -29,27 +29,27 @@
 				{% csrf_token %}
 				<div class="row">
 					<div class="col-6 form-group">
-						<label for="vendor_name">Vendor Name</label>
-						<input type="text" class="form-control" id="vendor_name" placeholder="Vendor Name"
-							   name="vendor_name" required>
+						<label for="customer_name">Customer Name</label>
+						<input type="text" class="form-control" id="customer_name" placeholder="Customer Name"
+							   name="customer_name" required>
 					</div>
 					<div class="col-6 form-group">
-						<label for="vendor_phone">Vendor Contact Number</label>
-						<input type="tel" class="form-control" id="vendor_phone" placeholder="Vendor Contact Number"
-							   name="vendor_phone" required>
+						<label for="customer_phone">Customer Contact Number</label>
+						<input type="tel" class="form-control" id="customer_phone" placeholder="Customer Contact Number"
+							   name="customer_phone" required onblur="fetchCustomerDetails()">
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-6 form-group">
-						<label for="vendor_gstin">Vendor GSTIN <span
+						<label for="customer_gstin">Customer GSTIN <span
 								id="gstin-validation-message"></span></label>
-						<input type="text" class="form-control" id="vendor_gstin" placeholder="Vendor GST"
-							   name="vendor_gstin">
+						<input type="text" class="form-control" id="customer_gstin" placeholder="Customer GST"
+							   name="customer_gstin">
 					</div>
 					<div class="col-3 form-group">
-						<label for="vendor_pincode">Vendor Pincode </label>
-						<input type="tel" class="form-control" id="vendor_pincode" placeholder="Vendor Contact Pincode"
-							   name="vendor_pincode" required>
+						<label for="customer_pincode">Customer Pincode </label>
+						<input type="tel" class="form-control" id="customer_pincode" placeholder="Customer Contact Pincode"
+							   name="customer_pincode" required>
 					</div>
 					<div class="col-3 form-group">
 						<label for="invoice_date">Invoice Date</label>
@@ -59,20 +59,20 @@
 				</div>
 				<div class="row">
 					<div class="col-6 form-group">
-						<label for="vendor_city">Vendor City </label>
-						<input type="text" class="form-control" id="vendor_city" placeholder="Vendor City"
-							   name="vendor_city" readonly>
+						<label for="customer_city">Customer City </label>
+						<input type="text" class="form-control" id="customer_city" placeholder="Customer City"
+							   name="customer_city" readonly>
 					</div>
 					<div class="col-6 form-group">
-						<label for="vendor_state">Vendor State </label>
-						<input type="tel" class="form-control" id="vendor_state" placeholder="Vendor State"
-							   name="vendor_state" readonly>
+						<label for="customer_state">Customer State </label>
+						<input type="tel" class="form-control" id="customer_state" placeholder="Customer State"
+							   name="customer_state" readonly>
 					</div>
 				</div>
 				<div class=" form-group">
-					<label for="vendor_address">Vendor Address </label>
-					<textarea class="form-control" id="vendor_address" placeholder="Vendor Address"
-							  name="vendor_address"></textarea>
+					<label for="customer_address">Customer Address </label>
+					<textarea class="form-control" id="customer_address" placeholder="Customer Address"
+							  name="customer_address"></textarea>
 				</div>
 
 
@@ -99,8 +99,7 @@
 						<tbody data-repeater-list="invoice_items">
 
 						<tr class="invoice_item" data-repeater-item id="invoice_data_1">
-							<td style="padding: 0.2rem 0.5rem;"><input class="form-control form-control-sm px-1"
-																	   type="text" name="barcode" min="0"></td>
+							<td style="padding: 0.2rem 0.5rem;"><input class="form-control form-control-sm px-1" type="text" name="barcode" min="0" onchange="barcodeFetch(this)" ></td>
 
 							<td style="padding: 0.2rem 0.5rem;">
 								<select class="form-control form-control-sm px-1" name="product"
@@ -370,7 +369,7 @@
         }
 
         function handleInputChange() {
-            var inputElement = document.getElementById("vendor_gstin");
+            var inputElement = document.getElementById("customer_gstin");
             var validationMessage = document.getElementById("gstin-validation-message");
             if (inputElement.value == "") {
                 validationMessage.textContent = "";
@@ -385,21 +384,21 @@
         }
 
         function handleFormSubmit(event) {
-            var inputElement = document.getElementById("vendor_gstin");
+            var inputElement = document.getElementById("customer_gstin");
             if (!validateGSTIN(inputElement.value)) {
                 event.preventDefault();
                 alert("Please enter a valid GSTIN before submitting.");
             }
         }
 
-        var gstinInput = document.getElementById("vendor_gstin");
+        var gstinInput = document.getElementById("customer_gstin");
         gstinInput.addEventListener("input", handleInputChange);
 
-        var organizationForm = document.getElementById("vendor_gstin");
+        var organizationForm = document.getElementById("customer_gstin");
         organizationForm.addEventListener("submit", handleFormSubmit);
 
         $(document).ready(function () {
-            $('#vendor_pincode').blur(function () {
+            $('#customer_pincode').blur(function () {
                 var pincode = $(this).val();
                 if (pincode.length == 6) {
                     $.ajax({
@@ -409,8 +408,8 @@
                             if (result[0].Status == 'Success') {
                                 var city = result[0].PostOffice[0].District;
                                 var state = result[0].PostOffice[0].State;
-                                $('#vendor_city').val(city);
-                                $('#vendor_state').val(state);
+                                $('#customer_city').val(city);
+                                $('#customer_state').val(state);
                             }
                         }
                     });
@@ -420,22 +419,117 @@
 	</script>
 	<script>
         function product_name(element) {
-            var parentId = $(element).closest('tr').attr('id');
-            if ($(element).val() === 'other') {
-                var name = $(element).attr('name')
-                name = name.replace("product", "name");
-                var newInput = $('<input>', {
-                    class: 'form-control form-control-sm',
-                    type: 'text',
-                    name: name,
-                    placeholder: 'Product Name',
-                    required: true,
-                });
-                $(element).replaceWith(newInput);
-                $('#' + parentId + ' input').not('.price').removeAttr('readonly');
+			var $row = $(element).closest('tr');
+			var selectedProductId = $(element).val();
+			var prefix = $(element).attr('name').match(/(^[^\[]+\[\d+\])/)[0]
 
-            }
-        }
+			if (selectedProductId == 'other') {
+				// If "Create Product" is selected, replace the select input with a text input
+				var nameInput = $('<input>', {
+					class: 'form-control form-control-sm',
+					type: 'text',
+					name: prefix + '[name]', // Corrected: Using variable 'prefix' correctly
+					placeholder: 'Product Name',
+					required: true,
+				});
+
+
+				$row.find('select[name="' + prefix + '[product]"]').replaceWith(nameInput);
+				$row.find('input').not('.price').removeAttr('readonly');
+			} else{
+				// If a product is selected, fetch product details and update related fields
+				var url = '{% url "fetch_product" %}';
+
+				fetch(url, {
+					method: "POST",
+					body: JSON.stringify({
+						organization: 1, // Replace with the actual organization ID
+						product_id: selectedProductId,
+					}),
+					headers: {
+						"Content-Type": "application/json",
+					},
+				})
+				.then(response => response.json())
+				.then(result => {
+					if (result) {
+						console.log(result);
+						if(result.message === "Invalid Request"){
+							console.log("true");
+						}
+						else{
+							var gst = (Number(result.igst)+Number(result.cgst)+Number(result.sgst)) * 100
+							$row.find('input[name="' + prefix + '[barcode]"]').val(result.barcode);
+							$row.find('input[name="' + prefix + '[description]"]').val(result.description);
+							$row.find('input[name="' + prefix + '[hsn]"]').val(result.hsn_code);
+							$row.find('input[name="' + prefix + '[qty]"]').val(1);
+							$row.find('input[name="' + prefix + '[sku]"]').val(result.sku_code);
+							$row.find('input[name="' + prefix + '[rate]"]').val(result.price);
+							$row.find('input[name="' + prefix + '[gst]"]').val(gst);
+							calculate_total(); // Call the function to update the total
+							$(element).closest('tbody').find('.btn-success.btn-rounded.btn-icon[data-repeater-create]').click();
+						}
+						
+
+					} else {
+						console.log("Product details not found.");
+					}
+				})
+				.catch(error => {
+					console.error("Error:", error);
+				});
+			}
+		}
+		function handleBarcodeInput(event, element) {
+			if (event.keyCode === 13) { // 13 is the key code for Enter
+				barcodeFetch(element);
+			}
+		}
+		function barcodeFetch(element){
+			var $row = $(element).closest('tr');
+			var prefix = $(element).attr('name').match(/(^[^\[]+\[\d+\])/)[0]
+			var barcode = $(element).val();
+			console.log(prefix)
+			var url = '{% url "fetch_product" %}';
+
+				fetch(url, {
+					method: "POST",
+					body: JSON.stringify({
+						organization: 1, // Replace with the actual organization ID
+						barcode: barcode,
+					}),
+					headers: {
+						"Content-Type": "application/json",
+					},
+				})
+				.then(response => response.json())
+				.then(result => {
+					if (result) {
+						console.log(result.message);
+						if(!result.message === "Invalid Request"){
+							var gst = (Number(result.igst)+Number(result.cgst)+Number(result.sgst)) * 100
+							$row.find('select[name="' + prefix + '[product]"]').val(result.id);
+							$row.find('input[name="' + prefix + '[description]"]').val(result.description);
+							$row.find('input[name="' + prefix + '[hsn]"]').val(result.hsn_code);
+							$row.find('input[name="' + prefix + '[qty]"]').val(1);
+							$row.find('input[name="' + prefix + '[sku]"]').val(result.sku_code);
+							$row.find('input[name="' + prefix + '[rate]"]').val(result.price);
+							$row.find('input[name="' + prefix + '[gst]"]').val(gst);
+
+							calculate_total(); // Call the function to update the total
+							$(element).closest('tbody').find('.btn-success.btn-rounded.btn-icon[data-repeater-create]').click();
+						}
+						
+
+					} else {
+						console.log("Product details not found.");
+					}
+				})
+				.catch(error => {
+					console.error("Error:", error);
+				});
+		}
+
 	</script>
 
 	<script>
@@ -535,7 +629,52 @@
             });
         })(jQuery);
 
+		const currentDate = new Date().toISOString().slice(0, 10);
+   		document.getElementById("invoice_date").value = currentDate;
+
 	</script>
 
+	<script>
+		contact_number = document.getElementById("invoice_date").value
+	</script>
+
+	<script>
+		function fetchCustomerDetails() {
+			console.log("Activated function")
+			const customerPhone = document.getElementById("customer_phone").value;
+			const url = "{% url 'fetch_customer' %}";
+
+			if (customerPhone) {
+				fetch(url, {
+					method: "POST",
+					body: JSON.stringify({ "contact": customerPhone }),
+					headers: {
+						"Content-Type": "application/json",
+					},
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (!data.hasOwnProperty("message")) {
+						const customerDetails = data;
+						console.log(data)
+						document.getElementById("customer_name").value = customerDetails.name;
+						document.getElementById("customer_gstin").value = customerDetails.gst_id;
+						document.getElementById("customer_pincode").value = customerDetails.pin_code;
+						$('#customer_pincode').blur();
+
+						document.getElementById("customer_address").value = customerDetails.address;
+						// Populate other fields as needed
+					} else {
+						console.log(data)
+						// Handle the case when customer details are not found
+						console.log("Customer not Found")
+					}
+				})
+				.catch(error => {
+					console.error("Error:", error);
+				});
+			}
+		}
+	</script>
 
 {% endblock %}

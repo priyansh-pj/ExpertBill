@@ -26,7 +26,7 @@
 							<tr>
 								<th>Invoice #</th>
 								<th>Date</th>
-								<th>Supplier</th>
+								<th>Customer</th>
 								<th>Amount</th>
 								<th>View</th>
 							</tr>
@@ -36,10 +36,10 @@
 								<tr>
 									<td>{{ invoice.invoice_organization }}</td>
 									<td>{{ invoice.date }}</td>
-									<td>{{ invoice.supplier.name }}</td>
+									<td>{{ invoice.customer.name }}</td>
 									<td>₹ {{ invoice.total }}</td>
 									<td>
-										<button class="btn btn-outline-primary">View</button>
+										<a class="btn btn-outline-primary" href={%url "invoice_print" invoice.id%}>View</a>
 									</td>
 								</tr>
 							{% endfor %}

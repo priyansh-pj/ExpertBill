@@ -88,15 +88,30 @@
             </div>
           </div>
         </div>
-        <ul class="nav">
-          <li class="nav-item">
-            <a class="nav-link" href="../../index.html">
-              <i class="mdi mdi-view-dashboard menu-icon"></i>
-              <span class="menu-title">Dashboard</span>
-            </a>
-          </li>
+
           {% if organization %}
-              <li class="nav-item">
+          <ul class="nav">
+            <li class="nav-item">
+              <a class="nav-link" href={% url "inventory" %}>
+                <i class="mdi mdi-format-list-bulleted menu-icon"></i>
+                <span class="menu-title">Inventory</span>
+              </a>
+            </li>
+            <hr>
+            <li class="nav-item">
+              <a class="nav-link" href={% url "invoice" %}>
+                <i class="mdi mdi-currency-inr menu-icon"></i>
+                <span class="menu-title">Billing</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href={% url "list_invoice" %}>
+                <i class="mdi mdi-format-list-bulleted menu-icon"></i>
+                <span class="menu-title">Billing List</span>
+              </a>
+            </li>
+            
+              {% comment %} <li class="nav-item">
                 <a class="nav-link" data-toggle="collapse" href="#owner" aria-expanded="false" aria-controls="owner">
                   <i class="mdi mdi-briefcase menu-icon"></i>
                   <span class="menu-title">Owner</span>
@@ -253,7 +268,7 @@
                     <li class="nav-item"> <a class="nav-link" href={% url "login" %}>Manifacture Parts History</a></li>
                   </ul>
                 </div>
-              </li>
+              </li> {% endcomment %}
           {% endif %}
 
         </ul>

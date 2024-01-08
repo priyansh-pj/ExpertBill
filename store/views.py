@@ -22,7 +22,7 @@ def inventory(request):
         "products": Product.objects.filter(
             organization=Organization.objects.get(
                 org_id=organization.get("organization")
-            )
+            ), status=True
         ).order_by("name"),
     }
     return render(request, "store/inventory.html", data)

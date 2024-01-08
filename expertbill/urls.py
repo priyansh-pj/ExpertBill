@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from credentials.views import login
 
 urlpatterns = [
     path("admin/", admin.site.urls, name="admin"),
@@ -26,6 +27,7 @@ urlpatterns = [
     path("bill/", include("bill.urls")),
     path("store/", include("store.urls")),
     path("hr/", include("hr.urls")),
+    path("", login ),
 ]
 
 

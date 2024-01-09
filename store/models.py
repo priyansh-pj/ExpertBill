@@ -149,6 +149,46 @@ class Product(models.Model):
         except Exception as e:
             print(f"Error creating Product: {str(e)}")
 
+    @classmethod
+    @transaction.atomic
+    def product_add(
+        cls,
+        organization,
+        name,
+        barcode,
+        description,
+        hsn_code,
+        sku_code,
+        quantity,
+        price,
+        cgst,
+        sgst,
+        igst,
+    ):
+        try:
+            quantity = int(quantity)
+            price = float(price)
+            cgst = float(cgst)
+            sgst = float(sgst)
+            igst = float(igst)
+
+            product = cls.objects.create(
+                organization=organization,
+                name=name,
+                barcode=barcode,
+                description=description,
+                hsn_code=hsn_code,
+                sku_code=sku_code,
+                quantity=quantity,
+                price=price,
+                cgst=cgst,
+                sgst=sgst,
+                igst=igst
+            )
+            return product
+        except Exception as e:
+            print(f"Error creating Product: {str(e)}")
+
     def save(self, *args, **kwargs):
         try:
             if self.quantity < 0:

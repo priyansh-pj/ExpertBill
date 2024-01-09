@@ -1,65 +1,332 @@
-{% extends 'template.html' %}
+{% extends 'template.html' %} 
+{% load static %} 
+{% block style %} 
+<link rel="stylesheet" href={% static "vendors/datatables.net-bs4/dataTables.bootstrap4.css" %}> 
+{% endblock %} 
+{%block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb bg-primary">
+    <li class="breadcrumb-item">
+      <a href="{{ breadcrumb.0 }}">Organization</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Inventory</li>
+  </ol>
+</nav>
 
-{% load static %}
+<div class="card">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center">
+      <h4 class="card-title mb-0">Products</h4>
+      <button type="button" class="btn btn-primary text-white" data-toggle="modal" data-target="#productAdd">Add Product</a>
+    </div>
+    <hr />
+    <div class="row">
+      <div class="col-12">
+        <div class="table-responsive">
+          <table id="order-listing" class="table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Description</th>
+                <th>Quantity</th>
+                <th>Amount</th>
+                <th>View</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for product in products %}
+              <tr>
+                <td>{{ product.name }}</td>
+                <td>{{ product.description }}</td>
+                <td>{{ product.quantity }}</td>
+                <td>₹ {{ product.price }}</td>
+                <td style="width:10%;">
+                  <button class="btn btn-outline-primary" data-toggle="modal" data-target="#productAdd{{product.id}}">View </button>
+                  <button class="btn btn-outline-info" data-toggle="modal" data-target="#update{{product.id}}">Update </button>
 
-{% block style %}
-	<link rel="stylesheet" href={% static "vendors/datatables.net-bs4/dataTables.bootstrap4.css" %}>
-{% endblock %}
+                </td>
+                <div class="modal fade" id="productAdd{{product.id}}" tabindex="-1" role="dialog" aria-labelledby="productAdd{{product.id}}" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="productAdd{{product.id}}">View Product - {{product.id}}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Form Starts Here -->
+                    <form class="forms-sample">
+                      <!-- Name, Barcode, Description -->
+                    {% csrf_token %}
+                        <div class="form-group ">
+                          <label for="name">Name</label>
+                          <input type="text" class="form-control" name="name" id="name" placeholder="Name" value="{{product.name}}" disabled/>
+                        </div>
+                        <div class="form-group ">
+                          <label for="barcode">Barcode</label>
+                          <input type="text" class="form-control" name="barcode" id="barcode" placeholder="Barcode" disabled value={{product.barcode}} />
+                        </div>
+                        <div class="form-group ">
+                          <label for="description">Description</label>
+                          <textarea class="form-control" name="description" id="description" placeholder="Description" value="{{product.description}}"  disabled></textarea>
+                        </div>
 
 
-{% block content %}
-	<nav aria-label="breadcrumb">
-		<ol class="breadcrumb bg-primary">
-			<li class="breadcrumb-item"><a href={{ breadcrumb.0 }}>Organization</a></li>
-			<li class="breadcrumb-item active" aria-current="page">Inventory</li>
-		</ol>
-	</nav>
+                      <!-- HSN Code, SKU Code, Quantity -->
+                      <div class="row">
+                        <div class="form-group col-md-4">
+                          <label for="hsn_code">HSN Code</label>
+                          <input type="text" class="form-control" name="hsn_code" id="hsn_code" placeholder="HSN Code" value="{{product.hsn_code}}"  disabled/>
+                        </div>
+                        <div class="form-group col-md-4">
+                          <label for="sku_code">SKU Code</label>
+                          <input type="text" class="form-control" name="sku_code" id="sku_code" placeholder="SKU Code" value="{{product.sku_code}}" disabled/>
+                        </div>
+                        <div class="form-group col-md-4">
+                          <label for="quantity">Quantity</label>
+                          <input type="number" class="form-control" name="quantity" id="quantity" placeholder="0" value="{{product.quantity}}" disabled/>
+                        </div>
+                      </div>
 
-	<div class="card">
-		<div class="card-body">
-			<div class="d-flex justify-content-between align-items-center">
-				<h4 class="card-title mb-0">Products</h4>
-				<a href="#" class="btn btn-primary text-white">Add Product</a>
-			</div>
-		<hr>
-			<div class="row">
-                <div class="col-12">
-                  <div class="table-responsive">
-                    <table id="order-listing" class="table">
-                      <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Description</th>
-                            <th>Quantity</th>
-                            <th>Amount</th>
-                            <th>View</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-					  {% for product in products %}
-							<tr>
-								<td>{{ product.name }}</td>
-								<td>{{ product.description }}</td>
-								<td>{{ product.quantity }}</td>
-								<td>₹ {{ product.price }}</td>
-								<td>
-									<button class="btn btn-outline-primary">View</button>
-								</td>
-							</tr>
-						{% endfor %}
-                      </tbody>
-                    </table>
-                  </div>
+                      <!-- Price, CGST, SGST, IGST -->
+                      <div class="row">
+                        <div class="form-group col-md-3">
+                          <label for="price">Price</label>
+                          <input type="text" class="form-control" name="price" id="price" placeholder="0.00" value="{{product.price}}" disabled/>
+                        </div>
+                        <div class="form-group col-md-3">
+                          <label for="cgst">CGST (%)</label>
+                          <input type="text" class="form-control" name="cgst" id="cgst" placeholder="0.00" value="{{product.cgst}}" disabled/>
+                        </div>
+                        <div class="form-group col-md-3">
+                          <label for="sgst">SGST (%)</label>
+                          <input type="text" class="form-control" name="sgst" id="sgst" placeholder="0.00" value="{{product.sgst}}" disabled/>
+                        </div>
+                        <div class="form-group col-md-3">
+                          <label for="igst">IGST (%)</label>
+                          <input type="text" class="form-control" name="igst" id="igst" placeholder="0.00" value="{{product.igst}}" disabled/>
+                        </div>
+                      </div>
+
+                      <!-- GST Included, Active Status -->
+                      <div class="row" style="margin-left: 0px;">
+                        <div class="form-check col-md-6">
+                          <label class="form-check-label">
+                            GST Included <input type="checkbox" class="form-check-input" name="gst_included" {% if product.gst_included %}checked{% endif %} disabled/>
+                          </label>
+                        </div>
+                        <div class="form-check col-md-6">
+                          <label class="form-check-label">
+                            Active Status <input type="checkbox" class="form-check-input" name="status" {% if product.status %}checked{% endif %} disabled/>
+                          </label>
+                        </div>
+                      </div>
+
+                      <!-- Submit and Cancel Buttons -->
+                    </form>
+
+                                <!-- Form Ends Here -->
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-danger" onclick="removeProduct({{product.id}})">Remove</button>   
+                                <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-		</div>
+                <div class="modal fade" id="update{{product.id}}" tabindex="-1" role="dialog" aria-labelledby="update{{product.id}}" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="productAdd{{product.id}}">Update Product - {{product.id}}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Form Starts Here -->
+                    <form class="forms-sample">
+                      <!-- Name, Barcode, Description -->
+                    {% csrf_token %}
+                        <div class="form-group ">
+                          <label for="name">Name</label>
+                          <input type="text" class="form-control" name="name" id="name" placeholder="Name" value="{{product.name}}" disabled/>
+                        </div>
+                        <div class="form-group">
+                          <label for="quantity">Quantity</label>
+                          <input type="number" class="form-control" name="quantity" id="quantity{{product.id}}" placeholder="0" value="{{product.quantity}}"/>
+                        </div>
 
-	</div>
+
+                      <!-- Submit and Cancel Buttons -->
+                    </form>
+
+                                <!-- Form Ends Here -->
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-warning" onclick="updateQtyProduct({{product.id}})">Update</button>   
+                                <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>                  
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="productAdd" tabindex="-1" role="dialog" aria-labelledby="productAdd" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel-2">Add Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Form Starts Here -->
+    <form class="forms-sample" action="{% url "inventory_add"%}" method="POST">
+      <!-- Name, Barcode, Description -->
+		{% csrf_token %}
+        <div class="form-group ">
+          <label for="name">Name</label>
+          <input type="text" class="form-control" name="name" id="name" placeholder="Name"/>
+        </div>
+        <div class="form-group ">
+          <label for="barcode">Barcode</label>
+          <input type="text" class="form-control" name="barcode" id="barcode" placeholder="Barcode"/>
+        </div>
+        <div class="form-group ">
+          <label for="description">Description</label>
+          <textarea class="form-control" name="description" id="description" placeholder="Description"></textarea>
+        </div>
+
+
+      <!-- HSN Code, SKU Code, Quantity -->
+      <div class="row">
+        <div class="form-group col-md-4">
+          <label for="hsn_code">HSN Code</label>
+          <input type="text" class="form-control" name="hsn_code" id="hsn_code" placeholder="HSN Code"/>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="sku_code">SKU Code</label>
+          <input type="text" class="form-control" name="sku_code" id="sku_code" placeholder="SKU Code"/>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="quantity">Quantity</label>
+          <input type="number" class="form-control" name="quantity" id="quantity" placeholder="0"/>
+        </div>
+      </div>
+
+      <!-- Price, CGST, SGST, IGST -->
+      <div class="row">
+        <div class="form-group col-md-3">
+          <label for="price">Price</label>
+          <input type="text" class="form-control" name="price" id="price" placeholder="0.00"/>
+        </div>
+        <div class="form-group col-md-3">
+          <label for="cgst">CGST (%)</label>
+          <input type="text" class="form-control" name="cgst" id="cgst" placeholder="0.00"/>
+        </div>
+        <div class="form-group col-md-3">
+          <label for="sgst">SGST (%)</label>
+          <input type="text" class="form-control" name="sgst" id="sgst" placeholder="0.00"/>
+        </div>
+        <div class="form-group col-md-3">
+          <label for="igst">IGST (%)</label>
+          <input type="text" class="form-control" name="igst" id="igst" placeholder="0.00"/>
+        </div>
+      </div>
+
+      <!-- GST Included, Active Status -->
+      <div class="row" style="margin-left: 0px;">
+        <div class="form-check col-md-6">
+          <label class="form-check-label">
+            GST Included <input type="checkbox" class="form-check-input" name="gst_included" />
+          </label>
+        </div>
+        <div class="form-check col-md-6">
+          <label class="form-check-label">
+            Active Status <input type="checkbox" class="form-check-input" name="status" checked/>
+          </label>
+        </div>
+      </div>
+
+      <!-- Submit and Cancel Buttons -->
+
+
+                <!-- Form Ends Here -->
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success">Submit</button>    </form>
+                <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
-
-
 {% block script %}
 	<script src={% static "vendors/datatables.net/jquery.dataTables.js" %}></script>
   	<script src={% static "vendors/datatables.net-bs4/dataTables.bootstrap4.js" %}></script>
   	<script src={% static "js/data-table.js" %}></script>
+  	<script src={% static "js/modal-demo.js" %}></script>
+	<script>
+    function removeProduct(productId) {
+    // Call the API to delete the product with the specified productId
+    fetch("{% url 'delete_product' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: productId }),
+    })
+    .then(response => {
+        if (response.ok) {
+            // If the API call is successful, refresh the page
+            location.reload();
+        } else {
+            // Handle any errors here
+            console.error("Error deleting product:", response.statusText);
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+    }
+
+
+    function updateQtyProduct(productId) {
+      quantity= document.getElementById('quantity'+productId).value
+      console.log(quantity)
+
+    // Call the API to delete the product with the specified productId
+    fetch("{% url 'update_qty_product' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: productId,qty: quantity}),
+    })
+    .then(response => {
+        if (response.ok) {
+            // If the API call is successful, refresh the page
+            location.reload();
+        } else {
+            // Handle any errors here
+            console.error("Error deleting product:", response.statusText);
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+    }
+
+  </script>  
 {% endblock %}

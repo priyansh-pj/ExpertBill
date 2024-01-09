@@ -123,7 +123,7 @@
 																	   type="text" name="sku"
 																	   placeholder="SKU" readonly></td>
 							<td style="padding: 0.2rem 0.5rem;"><input class="form-control form-control-sm qty px-1"
-																	   type="text" name="qty"
+																	   type="number" name="qty"
 																	   placeholder="Qty" min="1" value="1"></td>
 							<td style="padding: 0.2rem 0.5rem;"><input class="form-control form-control-sm rate px-1"
 																	   type="text" name="rate"
@@ -131,6 +131,7 @@
 							<td style="padding: 0.2rem 0.5rem;"><input class="form-control form-control-sm gst px-1"
 																	   type="text" name="gst"
 																	   placeholder="Gst" min="0" max="100" readonly>
+																<input class="included" type="hidden" name="included" value="false">	   
 							</td>
 							<td style="padding: 0.2rem 0.5rem;"><input
 									class="form-control form-control-sm discount px-1" type="text" name="discount"
@@ -458,14 +459,17 @@
 							console.log("true");
 						}
 						else{
+
 							var gst = (Number(result.igst)+Number(result.cgst)+Number(result.sgst)) * 100
 							$row.find('input[name="' + prefix + '[barcode]"]').val(result.barcode);
 							$row.find('input[name="' + prefix + '[description]"]').val(result.description);
 							$row.find('input[name="' + prefix + '[hsn]"]').val(result.hsn_code);
 							$row.find('input[name="' + prefix + '[qty]"]').val(1);
+							$row.find('input[name="' + prefix + '[qty]"]').attr('max', result.quantity);
 							$row.find('input[name="' + prefix + '[sku]"]').val(result.sku_code);
 							$row.find('input[name="' + prefix + '[rate]"]').val(result.price);
 							$row.find('input[name="' + prefix + '[gst]"]').val(gst);
+							$row.find('input[name="' + prefix + '[included]"]').val(result.gst_included);
 							calculate_total(); // Call the function to update the total
 							$(element).closest('tbody').find('.btn-success.btn-rounded.btn-icon[data-repeater-create]').click();
 						}
@@ -504,9 +508,11 @@
 				})
 				.then(response => response.json())
 				.then(result => {
+
 					if (result) {
-						console.log(result.message);
-						if(!result.message === "Invalid Request"){
+
+						if(result.message === undefined){
+
 							var gst = (Number(result.igst)+Number(result.cgst)+Number(result.sgst)) * 100
 							$row.find('select[name="' + prefix + '[product]"]').val(result.id);
 							$row.find('input[name="' + prefix + '[description]"]').val(result.description);
@@ -514,7 +520,9 @@
 							$row.find('input[name="' + prefix + '[qty]"]').val(1);
 							$row.find('input[name="' + prefix + '[sku]"]').val(result.sku_code);
 							$row.find('input[name="' + prefix + '[rate]"]').val(result.price);
+							$row.find('input[name="' + prefix + '[included]"]').val(result.gst_included);
 							$row.find('input[name="' + prefix + '[gst]"]').val(gst);
+
 
 							calculate_total(); // Call the function to update the total
 							$(element).closest('tbody').find('.btn-success.btn-rounded.btn-icon[data-repeater-create]').click();
@@ -535,10 +543,15 @@
 	<script>
         function calculateRowPrice(row) {
             const qty = parseFloat(row.find('.qty').val()) || 0;
+			let gst = parseFloat(row.find('.gst').val()) || 0;
             const rate = parseFloat(row.find('.rate').val()) || 0;
-            const gst = parseFloat(row.find('.gst').val()) || 0;
             const discount = parseFloat(row.find('.discount').val()) || 0;
+			const included = row.find('.included').val();
 
+			if(included==="true"){
+            	gst = 0;
+				console.log("included")
+			}
             // Calculate the price for this row with discount
             var price = (qty * rate) + (qty * rate * gst / 100);
             price -= (discount / 100) * price; // Apply discount

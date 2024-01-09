@@ -75,8 +75,8 @@ def list_invoice(request):
             )
         ).order_by("invoice_organization"),
     }
-
     return render(request, "bill/invoice/list.html", data)
+
 
 @csrf_exempt
 def customer_details(request):
@@ -118,8 +118,6 @@ def product_details(request):
             data = {
                 'message': 'Invalid JSON data'
             }
-
-
             return JsonResponse(data, status=400)
 
         organization_id = request_data.get("organization")
@@ -233,6 +231,8 @@ def register_invoice(data, organization):
                 )
             else:
                 product = Product.objects.get(id=product)
+                product.quantity -= int(items.get("qty")) or 0
+                product.save()
                 InvoiceProduct.register_invoice_product(
                     organization,
                     invoice,

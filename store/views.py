@@ -48,7 +48,7 @@ def remove_product(request):
         product = request_data.get("id")
         organization = Organization.objects.get(org_id=request.session["organization"].get("organization"))
 
-        products = Product.objects.filter(id=product, organization= organization)
+        products = Product.objects.get(id=product, organization= organization)
 
         if products:
             products.status=False

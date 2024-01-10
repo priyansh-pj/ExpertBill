@@ -112,7 +112,7 @@ class InvoiceProduct(models.Model):
         except ValueError:
             rate = 0.0
         try:
-            gst = float(gst) if gst.strip() else 0.0
+            gst = float(gst) if gst else 0.0
         except ValueError:
             gst = 0.0    
         total_before_gst = quantity * rate

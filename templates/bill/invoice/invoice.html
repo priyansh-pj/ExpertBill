@@ -46,18 +46,18 @@
 						<input type="text" class="form-control" id="customer_gstin" placeholder="Customer GST"
 							   name="customer_gstin">
 					</div>
-					<div class="col-3 form-group">
+					{% comment %} <div class="col-3 form-group">
 						<label for="customer_pincode">Customer Pincode </label>
 						<input type="tel" class="form-control" id="customer_pincode" placeholder="Customer Contact Pincode"
 							   name="customer_pincode" required>
-					</div>
+					</div> {% endcomment %}
 					<div class="col-3 form-group">
 						<label for="invoice_date">Invoice Date</label>
 						<input type="date" class="form-control" id="invoice_date" placeholder="DD/MM/YYYY"
 							   name="invoice_date" required>
 					</div>
 				</div>
-				<div class="row">
+				{% comment %} <div class="row">
 					<div class="col-6 form-group">
 						<label for="customer_city">Customer City </label>
 						<input type="text" class="form-control" id="customer_city" placeholder="Customer City"
@@ -73,7 +73,7 @@
 					<label for="customer_address">Customer Address </label>
 					<textarea class="form-control" id="customer_address" placeholder="Customer Address"
 							  name="customer_address"></textarea>
-				</div>
+				</div> {% endcomment %}
 
 
 				<div class="table-responsive ">
@@ -99,7 +99,7 @@
 						<tbody data-repeater-list="invoice_items">
 
 						<tr class="invoice_item" data-repeater-item id="invoice_data_1">
-							<td style="padding: 0.2rem 0.5rem;"><input class="form-control form-control-sm px-1" type="text" name="barcode" min="0" onchange="barcodeFetch(this)" ></td>
+							<td style="padding: 0.2rem 0.5rem;"><input class="form-control form-control-sm px-1" type="text" name="barcode" min="0" onkeydown="handleBarcodeInput(event, this)" ></td>
 
 							<td style="padding: 0.2rem 0.5rem;">
 								<select class="form-control form-control-sm px-1" name="product"
@@ -126,15 +126,15 @@
 																	   type="number" name="qty"
 																	   placeholder="Qty" min="1" value="1"></td>
 							<td style="padding: 0.2rem 0.5rem;"><input class="form-control form-control-sm rate px-1"
-																	   type="text" name="rate"
+																	   type="number" name="rate"
 																	   placeholder="Rate" min="0"></td>
 							<td style="padding: 0.2rem 0.5rem;"><input class="form-control form-control-sm gst px-1"
-																	   type="text" name="gst"
+																	   type="number" name="gst"
 																	   placeholder="Gst" min="0" max="100" readonly>
 																<input class="included" type="hidden" name="included" value="false">	   
 							</td>
 							<td style="padding: 0.2rem 0.5rem;"><input
-									class="form-control form-control-sm discount px-1" type="text" name="discount"
+									class="form-control form-control-sm discount px-1" type="number" name="discount"
 									placeholder="Disc" min="0" max="100"></td>
 							<td style="padding: 0.2rem 0.5rem;"><input class="form-control form-control-sm price  px-1"
 																	   type="text" name="price"
@@ -398,7 +398,7 @@
         var organizationForm = document.getElementById("customer_gstin");
         organizationForm.addEventListener("submit", handleFormSubmit);
 
-        $(document).ready(function () {
+        {% comment %} $(document).ready(function () {
             $('#customer_pincode').blur(function () {
                 var pincode = $(this).val();
                 if (pincode.length == 6) {
@@ -416,7 +416,7 @@
                     });
                 }
             });
-        });
+        }); {% endcomment %}
 	</script>
 	<script>
         function product_name(element) {
@@ -444,7 +444,7 @@
 				fetch(url, {
 					method: "POST",
 					body: JSON.stringify({
-						organization: 1, // Replace with the actual organization ID
+						organization: {{organization.organization}}, // Replace with the actual organization ID
 						product_id: selectedProductId,
 					}),
 					headers: {
@@ -484,8 +484,11 @@
 				});
 			}
 		}
+
 		function handleBarcodeInput(event, element) {
 			if (event.keyCode === 13) { // 13 is the key code for Enter
+				console.log("Triggers")
+				event.preventDefault();
 				barcodeFetch(element);
 			}
 		}
@@ -499,7 +502,7 @@
 				fetch(url, {
 					method: "POST",
 					body: JSON.stringify({
-						organization: 1, // Replace with the actual organization ID
+						organization: {{organization.organization}}, // Replace with the actual organization ID
 						barcode: barcode,
 					}),
 					headers: {
@@ -672,11 +675,7 @@
 						console.log(data)
 						document.getElementById("customer_name").value = customerDetails.name;
 						document.getElementById("customer_gstin").value = customerDetails.gst_id;
-						document.getElementById("customer_pincode").value = customerDetails.pin_code;
-						$('#customer_pincode').blur();
 
-						document.getElementById("customer_address").value = customerDetails.address;
-						// Populate other fields as needed
 					} else {
 						console.log(data)
 						// Handle the case when customer details are not found

@@ -52,10 +52,7 @@ class Customer(models.Model):
     gst_id = models.CharField(
         max_length=15, validators=[gst_id_validator], null=True, blank=True
     )
-    address = models.TextField(null=True, blank=True)
-    pin_code = models.PositiveIntegerField(
-        validators=[MinValueValidator(100000), MaxValueValidator(999999)]
-    )
+
     contact_number = models.CharField(max_length=15, unique=True, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.BooleanField(default=True)
@@ -73,8 +70,8 @@ class Customer(models.Model):
                 organization=organization,
                 name=name,
                 gst_id=gst_id,
-                address=address,
-                pin_code=pin_code,
+
+
                 contact_number=contact_number,
             )
             return supplier
@@ -128,11 +125,13 @@ class Product(models.Model):
         quantity,
         price,
         cgst,
+
     ):
         try:
-            quantity = int(quantity)
-            price = float(price)
-            cgst = float(cgst)
+
+            quantity = int(quantity) if quantity else 0
+            price = float(price) if price.strip() else 0.0
+            cgst = float(cgst) if cgst.strip() else 0.0
 
             product = cls.objects.create(
                 organization=organization,
@@ -166,11 +165,11 @@ class Product(models.Model):
         igst,
     ):
         try:
-            quantity = int(quantity)
-            price = float(price)
-            cgst = float(cgst)
-            sgst = float(sgst)
-            igst = float(igst)
+            quantity = int(quantity) if quantity.strip() else 0
+            price = float(price) if price.strip() else 0.0
+            cgst = float(cgst) if cgst.strip() else 0.0
+            sgst = float(sgst) if sgst.strip() else 0.0
+            igst = float(igst) if igst.strip() else 0.0
 
             product = cls.objects.create(
                 organization=organization,

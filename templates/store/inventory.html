@@ -278,6 +278,14 @@
   	<script src={% static "js/data-table.js" %}></script>
   	<script src={% static "js/modal-demo.js" %}></script>
 	<script>
+    var barcodeInput = document.getElementById("barcode");
+    barcodeInput.addEventListener("keydown", function(event) {
+        if (event.keyCode === 13) { // Check if the key pressed is Enter (key code 13)
+          
+            event.preventDefault(); // Prevent the default form submission behavior
+            // You can add any custom logic here if needed
+        }
+    });
     function removeProduct(productId) {
     // Call the API to delete the product with the specified productId
     fetch("{% url 'delete_product' %}", {

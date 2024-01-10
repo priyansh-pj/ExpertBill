@@ -49,33 +49,44 @@
         <header>
             <h1 class="text-center">{{ organization.name }}</h1>
             <h2 class="text-center">A CLOTHING STORE</h2>
-            <p class="text-center">{{ organization.name }}</p>
+            <p class="text-center">{{ organization.address }}</p>
             <p class="text-center">Phone: {{ organization.contact_number }}</p>
             <p class="text-center">Email: {{ organization.email }}</p>
+            <p class="text-center">{{ organization.gst_id }}</p>
             <hr>
         </header>
+        <table>
+            <tbody>
+                <tr>
+                    <td style="width: 68%"><p>Customer: {{ invoice.customer.name }}</p></td>
+                    <td><p>Bill No.: {{ invoice.id }}</p></td>
+                </tr>
+                <tr>
+                    <td style="width: 68%"><p>Mobile: {{ invoice.customer.contact_number }}</p></td>
+                    <td><p>Date: {{ invoice.date|date:"d/m/Y" }}</p></td>
+                </tr>
+                <tr>
+                    <td><p>User: {{ first_name }} {{ last_name}}</p></td>
 
-        <!-- Customer Info -->
-        <div class="customer-info">
-            <p>Customer: {{ invoice.customer.name }}</p>
-            <p>Mobile: {{ invoice.customer.contact_number }}</p>
-            <p>User: {{ first_name }} {{ last_name}}</p>
-            <hr>
-        </div>
+                </tr>
+            </tbody>
+        <table>
+                    
+                <!-- Customer Info -->
 
-        <!-- Invoice Details -->
-        <div class="invoice-details">
-            <p>Bill No.: {{ invoice.id }}</p>
-            <p>Date: {{ invoice.date|date:"d/m/Y" }}</p>
-            <hr>
-        </div>
+
+                <!-- Invoice Details -->
+                <div class="invoice-details">
+                    
+                    <hr>
+                </div>
 
         <!-- Products Table -->
         <table width="100%">
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Name</th>
+                    <th>Item</th>
                     <th>Qty</th>
                     <th>Rate</th>
                     <th>Dis %</th>
@@ -134,7 +145,7 @@
             <p>Terms & Conditions:</p>
             <ul>
                 <li>Goods once sold not be taken back & no cash Refund.</li>
-                <li>Goods may be exchanged in week only on the.</li>
+                <li>Goods may be exchanged in one day only.</li>
                 <li>No guarantee for Colours & Pillings.</li>
             </ul>
             <p class="text-center">E.&.O.E</p>

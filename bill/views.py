@@ -83,15 +83,13 @@ def customer_details(request):
     if request.method == "POST":
         request_data = json.loads(request.body)
         contact = request_data.get("contact")
-        customer_details = Customer.objects.values('name', 'gst_id', 'address', 'pin_code', 'contact_number').filter(contact_number=contact).first()
+        customer_details = Customer.objects.values('name', 'gst_id', 'contact_number').filter(contact_number=contact).first()
 
         if customer_details:
             # Customer details found, return a JSON response
             data = {
                 'name': customer_details['name'],
                 'gst_id': customer_details['gst_id'],
-                'address': customer_details['address'],
-                'pin_code': customer_details['pin_code'],
                 'contact_number': customer_details['contact_number']
             }
             return JsonResponse(data, status=200)
@@ -178,8 +176,6 @@ def register_invoice(data, organization):
             organization,
             data.get("customer_name"),
             data.get("customer_gstin"),
-            data.get("customer_address"),
-            data.get("customer_pincode"),
             data.get("customer_phone"),
         )
 
@@ -192,7 +188,7 @@ def register_invoice(data, organization):
             method = payments.get("payment-type")
             payment = payments.get("payment-amt")
             InvoicePayment.insert_payment_method(invoice, method, payment)
-        if len(data.get("payment")) == 1 and float(data.get("payment")[0].get("payment-amt")) != float(data.get("total")):
+        if len(data.get("payment")) == 1 and (float(data.get("payment")[0].get("payment-amt"))) != float(data.get("total")):
             total = float(data.get("total"))
             payment_amt = float(data.get("payment")[0].get("payment-amt"))
 
@@ -268,11 +264,7 @@ def invoice_post_data(post_data):
         "customer_name",
         "customer_phone",
         "customer_gstin",
-        "customer_pincode",
         "invoice_date",
-        "customer_city",
-        "customer_state",
-        "customer_address",
         "total",
         "partial-payment",
         "transport_status",

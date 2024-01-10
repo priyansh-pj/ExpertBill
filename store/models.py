@@ -163,6 +163,7 @@ class Product(models.Model):
         cgst,
         sgst,
         igst,
+        gst_included,
     ):
         try:
             quantity = int(quantity) if quantity.strip() else 0
@@ -183,6 +184,7 @@ class Product(models.Model):
                 cgst=cgst,
                 sgst=sgst,
                 igst=igst
+                gst_included=gst_included
             )
             return product
         except Exception as e:

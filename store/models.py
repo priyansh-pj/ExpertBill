@@ -183,7 +183,7 @@ class Product(models.Model):
                 price=price,
                 cgst=cgst,
                 sgst=sgst,
-                igst=igst
+                igst=igst,
                 gst_included=gst_included
             )
             return product

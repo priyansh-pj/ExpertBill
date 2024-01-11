@@ -15,6 +15,7 @@ git fetch origin master:master
 git checkout master
 git reset --hard origin/master
 git rm -r --cached db.sqlite3
-
+start cmd /k "python manage.py makemigrations"
+start cmd /k "python manage.py migrate"
 start cmd /k "python manage.py runserver"
 start "" "http://localhost:8000"

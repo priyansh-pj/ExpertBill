@@ -146,7 +146,7 @@ def product_details(request):
 
             return JsonResponse(data, status=400)
 
-        product = Product.objects.filter(organization=organization, **{field_name: value}).values().first()
+        product = Product.objects.filter(organization=organization, **{field_name: value}, status=True).values().first()
 
 
         if product:

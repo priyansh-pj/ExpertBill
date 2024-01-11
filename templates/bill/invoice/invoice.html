@@ -437,6 +437,8 @@
 
 				$row.find('select[name="' + prefix + '[product]"]').replaceWith(nameInput);
 				$row.find('input').not('.price').removeAttr('readonly');
+				$row.find('input[name="' + prefix + '[barcode]"]').prop('readonly', true);
+
 			} else{
 				// If a product is selected, fetch product details and update related fields
 				var url = '{% url "fetch_product" %}';
@@ -471,7 +473,7 @@
 							$row.find('input[name="' + prefix + '[gst]"]').val(gst);
 							$row.find('input[name="' + prefix + '[included]"]').val(result.gst_included);
 							calculate_total(); // Call the function to update the total
-							$(element).closest('tbody').find('.btn-success.btn-rounded.btn-icon[data-repeater-create]').click();
+
 						}
 						
 
@@ -528,7 +530,7 @@
 
 
 							calculate_total(); // Call the function to update the total
-							$(element).closest('tbody').find('.btn-success.btn-rounded.btn-icon[data-repeater-create]').click();
+
 						}
 						
 

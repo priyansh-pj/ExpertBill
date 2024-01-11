@@ -37,7 +37,8 @@ def register_product(request):
     print("url triggers")
     if request.method == "POST":
         print(request.POST)
-        gst_included = True if request.POST.get('gst_included') == "no" else False 
+        gst_included = True if request.POST.get('gst_included') == "on" else False 
+        print(gst_included)
         organization = Organization.objects.get(org_id=request.session["organization"].get("organization"))
         Product.product_add(organization, request.POST.get('name'), request.POST.get('barcode'),request.POST.get('description'), request.POST.get('hsn_code'), request.POST.get('sku_code'), request.POST.get('quantity'), request.POST.get('price'), request.POST.get('cgst'), request.POST.get('sgst'), request.POST.get('igst'), gst_included)
     return redirect('inventory')

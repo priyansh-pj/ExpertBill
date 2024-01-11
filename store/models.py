@@ -63,20 +63,18 @@ class Customer(models.Model):
     @classmethod
     @transaction.atomic
     def register_customer(
-        cls, organization, name, gst_id, address, pin_code, contact_number
+        cls, organization, name, gst_id, contact_number
     ):
         try:
             supplier = cls.objects.create(
                 organization=organization,
                 name=name,
                 gst_id=gst_id,
-
-
                 contact_number=contact_number,
             )
             return supplier
         except Exception as e:
-            print(f"Error creating supplier: {str(e)}")
+            print(f"Error creating Customer: {str(e)}")
 
 
 class Product(models.Model):
@@ -91,20 +89,20 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     cgst = models.DecimalField(
         max_digits=5,
-        decimal_places=2,
-        default=0.00,
+        decimal_places=3,
+        default=0.000,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
     sgst = models.DecimalField(
         max_digits=5,
-        decimal_places=2,
-        default=0.00,
+        decimal_places=3,
+        default=0.000,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
     igst = models.DecimalField(
         max_digits=5,
-        decimal_places=2,
-        default=0.00,
+        decimal_places=3,
+        default=0.000,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
     gst_included = models.BooleanField(default=False)
@@ -194,13 +192,13 @@ class Product(models.Model):
         try:
             if self.quantity < 0:
                 self.quantity = 0
-
+            if (self.cgst+ self.sgst+ self.igst)>=1:
             # Ensure cgst, sgst, and igst are converted to float
-            self.cgst, self.sgst, self.igst = (
-                float(self.cgst) / 100,
-                float(self.sgst) / 100,
-                float(self.igst) / 100,
-            )
+                self.cgst, self.sgst, self.igst = (
+                    float(self.cgst) / 100,
+                    float(self.sgst) / 100,
+                    float(self.igst) / 100,
+                )
 
             super().save(*args, **kwargs)
         except Exception as e:
